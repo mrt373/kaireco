@@ -1,5 +1,7 @@
 export type GoodsStatus = "keep" | "to_sell" | "archived";
 
+export type ArchiveMethod = "donated" | "sold" | "recycled" | "other";
+
 export type Goods = {
   goods_id: string;
   title: string;
@@ -10,4 +12,6 @@ export type Goods = {
   tags: string[];
   created_at: string;
   archived_at: string | null;
+  archive_method?: ArchiveMethod;
+  archive_reason?: string;
 };

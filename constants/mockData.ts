@@ -1,5 +1,47 @@
 import { Goods } from "@/types/goods";
 
+export const MOCK_ARCHIVED: Goods[] = [
+  {
+    goods_id: "a1",
+    title: "Vintage Typewriter",
+    text: "デジタル化で不要になった",
+    price: 450,
+    status: "archived",
+    images: ["https://picsum.photos/seed/typewriter/400/300"],
+    tags: ["Collectibles"],
+    created_at: "2023-01-10",
+    archived_at: "2023-10-24",
+    archive_method: "donated",
+    archive_reason: "デジタル化により使わなくなったため寄付",
+  },
+  {
+    goods_id: "a2",
+    title: "Encyclopedia Set",
+    text: "電子書籍に移行した",
+    price: 0,
+    status: "archived",
+    images: ["https://picsum.photos/seed/books/400/300"],
+    tags: ["Books"],
+    created_at: "2022-05-01",
+    archived_at: "2023-10-15",
+    archive_method: "recycled",
+    archive_reason: "全24巻をデジタルに移行",
+  },
+  {
+    goods_id: "a3",
+    title: "Studio Headphones",
+    text: "より良いものに買い替えた",
+    price: 280,
+    status: "archived",
+    images: ["https://picsum.photos/seed/studio/400/300"],
+    tags: ["Electronics"],
+    created_at: "2021-08-20",
+    archived_at: "2023-10-12",
+    archive_method: "sold",
+    archive_reason: "WH-1000XM5に買い替えたため売却",
+  },
+];
+
 export const MOCK_GOODS: Goods[] = [
   {
     goods_id: "1",

@@ -1,5 +1,6 @@
 import { Goods } from "@/types/goods";
-import { Image, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { Image, Pressable, Text, View } from "react-native";
 
 type Props = {
   item: Goods;
@@ -7,9 +8,13 @@ type Props = {
 
 export default function GoodsCard({ item }: Props) {
   const isToSell = item.status === "to_sell";
+  const router = useRouter();
 
   return (
-    <View className="bg-surface border border-border rounded-xl mb-4 overflow-hidden">
+    <Pressable
+      className="bg-surface border border-border rounded-xl mb-4 overflow-hidden active:opacity-70"
+      onPress={() => router.push(`/goods/${item.goods_id}`)}
+    >
       <Image
         source={{ uri: item.images[0] }}
         className="w-full h-44"
@@ -45,6 +50,6 @@ export default function GoodsCard({ item }: Props) {
           ${item.price.toLocaleString()}
         </Text>
       </View>
-    </View>
+    </Pressable>
   );
 }
