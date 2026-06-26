@@ -1,25 +1,44 @@
+import { supabase } from "@/lib/supabase";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    Alert.alert(t("profile.logout"), t("profile.logoutConfirm"), [
+      { text: t("common.cancel"), style: "cancel" },
+      {
+        text: t("profile.logout"),
+        style: "destructive",
+        onPress: async () => {
+          await supabase.auth.signOut();
+        },
+      },
+    ]);
+  };
 
   const MENU_ITEMS: {
     icon: keyof typeof MaterialIcons.glyphMap;
     label: string;
     description: string;
     destructive?: boolean;
+    onPress?: () => void;
   }[] = [
     {
       icon: "person-outline",
       label: t("profile.profileEdit"),
       description: t("profile.profileEditDesc"),
+      onPress: () => router.push("/profile-edit"),
     },
     {
       icon: "notifications-none",
       label: t("profile.notifications"),
       description: t("profile.notificationsDesc"),
+      onPress: () => router.push("/notifications"),
     },
 
     {
@@ -27,6 +46,7 @@ export default function ProfileScreen() {
       label: t("profile.logout"),
       description: t("profile.logoutDesc"),
       destructive: true,
+      onPress: handleLogout,
     },
   ];
 
@@ -74,6 +94,7 @@ export default function ProfileScreen() {
           {MENU_ITEMS.map((item, index) => (
             <Pressable
               key={item.label}
+              onPress={item.onPress}
               className={`flex-row items-center px-4 py-4 active:opacity-70 ${
                 index < MENU_ITEMS.length - 1 ? "border-b border-border" : ""
               }`}

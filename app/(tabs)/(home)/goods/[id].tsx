@@ -1,14 +1,46 @@
-import { MOCK_GOODS } from "@/constants/mockData";
+import { fetchGoodsById } from "@/lib/goods";
+import { Goods } from "@/types/goods";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function GoodsDetailScreen() {
   const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const item = MOCK_GOODS.find((g) => g.goods_id === id);
+  const [item, setItem] = useState<Goods | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let isActive = true;
+    fetchGoodsById(id)
+      .then((data) => {
+        if (isActive) setItem(data);
+      })
+      .finally(() => {
+        if (isActive) setIsLoading(false);
+      });
+    return () => {
+      isActive = false;
+    };
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator color="#C9A84C" />
+      </View>
+    );
+  }
 
   if (!item) {
     return (

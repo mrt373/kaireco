@@ -1,8 +1,12 @@
+import { useAuth } from "@/lib/auth";
+import { supabase } from "@/lib/supabase";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -19,16 +23,71 @@ const PRESET_TAGS = ["Electronics", "Apparel", "Furniture", "Books", "Other"];
 export default function AddScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { session } = useAuth();
   const [isKeep, setIsKeep] = useState(true);
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [note, setNote] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
+  };
+
+  const resetForm = () => {
+    setIsKeep(true);
+    setTitle("");
+    setPrice("");
+    setNote("");
+    setSelectedTags([]);
+  };
+
+  const handleCommit = async () => {
+    if (!session?.user) return;
+    if (!title.trim()) {
+      Alert.alert(t("add.itemDesignation"), t("add.titleRequired"));
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { data: goods, error: goodsError } = await supabase
+        .from("goods")
+        .insert({
+          user_id: session.user.id,
+          title: title.trim(),
+          text: note.trim() || null,
+          price: parseFloat(price) || 0,
+          status: isKeep ? "keep" : "to_sell",
+        })
+        .select("goods_id")
+        .single();
+      if (goodsError) throw goodsError;
+
+      for (const tagName of selectedTags) {
+        const { data: tag, error: tagError } = await supabase
+          .from("tags")
+          .upsert({ tag_name: tagName }, { onConflict: "tag_name" })
+          .select("tag_id")
+          .single();
+        if (tagError) throw tagError;
+
+        const { error: linkError } = await supabase
+          .from("goods_tags")
+          .insert({ goods_id: goods.goods_id, tag_id: tag.tag_id });
+        if (linkError) throw linkError;
+      }
+
+      resetForm();
+      router.dismiss();
+    } catch (error) {
+      Alert.alert(t("auth.errorTitle"), error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -153,10 +212,15 @@ export default function AddScreen() {
           <Text className="text-text-primary font-semibold">{t("add.cancel")}</Text>
         </Pressable>
         <Pressable
-          onPress={() => router.dismiss()}
+          onPress={handleCommit}
+          disabled={isSubmitting}
           className="flex-1 py-4 rounded-xl bg-gold items-center active:opacity-70"
         >
-          <Text className="text-black font-bold">{t("add.commitItem")}</Text>
+          {isSubmitting ? (
+            <ActivityIndicator color="#0D0D0D" />
+          ) : (
+            <Text className="text-black font-bold">{t("add.commitItem")}</Text>
+          )}
         </Pressable>
       </View>
     </KeyboardAvoidingView>

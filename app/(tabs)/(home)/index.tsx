@@ -1,25 +1,64 @@
 import GoodsCard from "@/components/GoodsCard";
-import { MOCK_GOODS } from "@/constants/mockData";
+import { useAuth } from "@/lib/auth";
+import { fetchActiveGoods } from "@/lib/goods";
 import { Goods } from "@/types/goods";
-import { useMemo, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 export default function HomeScreen() {
   const { t } = useTranslation();
+  const { session } = useAuth();
   const [search, setSearch] = useState("");
   const [selectedTag, setSelectedTag] = useState("all");
+  const [goods, setGoods] = useState<Goods[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const allTags = [t("home.tagAll"), ...Array.from(new Set(MOCK_GOODS.flatMap((g) => g.tags)))];
-  const totalValue = MOCK_GOODS.reduce((sum, g) => sum + g.price, 0);
+  useFocusEffect(
+    useCallback(() => {
+      if (!session?.user) return;
+      let isActive = true;
+      setIsLoading(true);
+      fetchActiveGoods(session.user.id)
+        .then((data) => {
+          if (isActive) setGoods(data);
+        })
+        .finally(() => {
+          if (isActive) setIsLoading(false);
+        });
+      return () => {
+        isActive = false;
+      };
+    }, [session?.user])
+  );
+
+  const allTags = [t("home.tagAll"), ...Array.from(new Set(goods.flatMap((g) => g.tags)))];
+  const totalValue = goods.reduce((sum, g) => sum + g.price, 0);
 
   const filtered = useMemo<Goods[]>(() => {
-    return MOCK_GOODS.filter((g) => {
+    return goods.filter((g) => {
       const matchTag = selectedTag === "all" || g.tags.includes(selectedTag);
       const matchSearch = g.title.toLowerCase().includes(search.toLowerCase());
       return matchTag && matchSearch;
     });
-  }, [search, selectedTag]);
+  }, [goods, search, selectedTag]);
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator color="#C9A84C" />
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-background px-4 pt-4">
@@ -72,14 +111,14 @@ export default function HomeScreen() {
           <Text className="text-text-secondary text-sm">
             {t("home.keep")}{" "}
             <Text className="text-gold font-semibold">
-              {MOCK_GOODS.filter((g) => g.status === "keep").length}
+              {goods.filter((g) => g.status === "keep").length}
             </Text>
           </Text>
           <Text className="text-text-muted">•</Text>
           <Text className="text-text-secondary text-sm">
             {t("home.toSell")}{" "}
             <Text className="text-gold font-semibold">
-              {MOCK_GOODS.filter((g) => g.status === "to_sell").length}
+              {goods.filter((g) => g.status === "to_sell").length}
             </Text>
           </Text>
         </View>
@@ -91,6 +130,11 @@ export default function HomeScreen() {
         renderItem={({ item }) => <GoodsCard item={item} />}
         contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <Text className="text-text-muted text-sm text-center mt-10">
+            {t("common.noItems")}
+          </Text>
+        }
       />
     </View>
   );
