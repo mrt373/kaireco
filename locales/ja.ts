@@ -48,6 +48,7 @@ export default {
     intentReflection: "購入理由・メモ",
     notePlaceholder: "このアイテムが今の自分に必要な理由は？",
     commitItem: "登録する",
+    editItem: "編集する",
     cancel: "キャンセル",
     titleRequired: "アイテム名を入力してください。",
   },
