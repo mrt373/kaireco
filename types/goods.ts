@@ -14,4 +14,5 @@ export type Goods = {
   archived_at: string | null;
   archive_method?: ArchiveMethod;
   archive_reason?: string;
+  id: string;
 };

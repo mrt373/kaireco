@@ -28,11 +28,14 @@ function mapRow(row: GoodsRow): Goods {
     price: Number(row.price),
     status: row.status,
     images: row.images ?? [],
-    tags: row.goods_tags.map((gt) => gt.tags?.tag_name).filter((t): t is string => !!t),
+    tags: row.goods_tags
+      .map((gt) => gt.tags?.tag_name)
+      .filter((t): t is string => !!t),
     created_at: row.created_at,
     archived_at: row.archived_at,
     archive_method: row.archive_method ?? undefined,
     archive_reason: row.archive_reason ?? undefined,
+    id: row.goods_id,
   };
 }
 
