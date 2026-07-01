@@ -46,8 +46,10 @@ export default {
     acquisitionValue: "Acquisition Value",
     category: "Category",
     intentReflection: "Intent & Reflection",
+    editItem: "Edit Item",
     notePlaceholder: "Why does this item matter to your current lifestyle?",
     commitItem: "Commit Item",
+
     cancel: "Cancel",
     titleRequired: "Please enter an item name.",
   },
@@ -91,6 +93,7 @@ export default {
     missingFields: "Please fill in all fields.",
     errorTitle: "Error",
     confirmEmailTitle: "Confirmation email sent",
-    confirmEmailMessage: "Please open the link in your email to finish signing up.",
+    confirmEmailMessage:
+      "Please open the link in your email to finish signing up.",
   },
 };

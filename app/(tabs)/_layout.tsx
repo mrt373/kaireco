@@ -33,6 +33,7 @@ export default function TabLayout() {
         name="(home)"
         options={{
           title: "Home",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="inventory" size={size} color={color} />
           ),

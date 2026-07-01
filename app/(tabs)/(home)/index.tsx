@@ -14,6 +14,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -38,10 +39,13 @@ export default function HomeScreen() {
       return () => {
         isActive = false;
       };
-    }, [session?.user])
+    }, [session?.user]),
   );
 
-  const allTags = [t("home.tagAll"), ...Array.from(new Set(goods.flatMap((g) => g.tags)))];
+  const allTags = [
+    t("home.tagAll"),
+    ...Array.from(new Set(goods.flatMap((g) => g.tags))),
+  ];
   const totalValue = goods.reduce((sum, g) => sum + g.price, 0);
 
   const filtered = useMemo<Goods[]>(() => {
@@ -61,7 +65,10 @@ export default function HomeScreen() {
   }
 
   return (
-    <View className="flex-1 bg-background px-4 pt-4">
+    <SafeAreaView className="flex-1 bg-background px-4 pt-4" edges={["top"]}>
+      <Text className="text-text-primary text-center text-lg font-bold mb-4">
+        Home
+      </Text>
       <View className="bg-surface border border-border rounded-xl px-4 py-3 mb-3">
         <TextInput
           className="text-text-primary text-sm"
@@ -84,13 +91,17 @@ export default function HomeScreen() {
             <Pressable
               key={value}
               className={`px-4 py-2 rounded-full border shrink-0 ${
-                selectedTag === value ? "bg-gold border-gold" : "bg-surface border-border"
+                selectedTag === value
+                  ? "bg-gold border-gold"
+                  : "bg-surface border-border"
               }`}
               onPress={() => setSelectedTag(value)}
             >
               <Text
                 className={`text-sm ${
-                  selectedTag === value ? "text-black font-bold" : "text-text-secondary font-medium"
+                  selectedTag === value
+                    ? "text-black font-bold"
+                    : "text-text-secondary font-medium"
                 }`}
               >
                 {tag}
@@ -136,6 +147,6 @@ export default function HomeScreen() {
           </Text>
         }
       />
-    </View>
+    </SafeAreaView>
   );
 }
