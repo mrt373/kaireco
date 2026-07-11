@@ -1,3 +1,4 @@
+import MenuModal from "@/components/MenuModal";
 import { fetchGoodsById } from "@/lib/goods";
 import { Goods } from "@/types/goods";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -7,7 +8,6 @@ import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Image,
-  Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -21,7 +21,7 @@ export default function GoodsDetailScreen() {
   const router = useRouter();
   const [item, setItem] = useState<Goods | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     let isActive = true;
@@ -55,48 +55,40 @@ export default function GoodsDetailScreen() {
 
   const isToSell = item.status === "to_sell";
 
-  const handleCommit = async () => {
-    setIsSubmitting(true);
+  const handleMoreOptions = () => {
+    setIsOpen(!isOpen);
+
     try {
-      // Implement the commit logic here, e.g., updating the item's status in the database
-      // For example:
-      // await supabase.from("goods").update({ status: "committed" }).eq("id", item.id);
-      router.push(`/goods/edit/${item.id}`);
+      console.log("More options pressed");
     } catch (error) {
       console.error(error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      {/* <View className="flex-row justify-between items-center px-4 pt-4 pb-2">
-        <TouchableOpacity
-          onPress={() => router.dismiss()}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          className="p-2"
-        >
-          <MaterialIcons name="arrow-back" size={24} color="#F5F0E8" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          className="p-2"
-        >
-          <MaterialIcons name="more-vert" size={24} color="#F5F0E8" />
-        </TouchableOpacity>
-      </View> */}
-      <View className="flex-row items-center px-4 pt-4 pb-2">
+      <View className="flex-row justify-between items-center px-4 pt-4 pb-2">
         <TouchableOpacity
           onPress={() => router.back()}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          className="p-2 -ml-2"
+          className="p-2"
         >
           <MaterialIcons name="arrow-back" size={24} color="#F5F0E8" />
         </TouchableOpacity>
         <Text className="text-text-primary text-lg font-bold ml-2">
-          {t("add.editItem")}
+          {"アイテム"}
         </Text>
+        <TouchableOpacity
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          className="p-2"
+        >
+          <MaterialIcons
+            name="more-vert"
+            size={24}
+            color="#F5F0E8"
+            onPress={handleMoreOptions}
+          />
+        </TouchableOpacity>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -107,7 +99,6 @@ export default function GoodsDetailScreen() {
             resizeMode="cover"
           />
         </View>
-
         <View className="px-4">
           <View className="flex-row justify-between items-start mb-2">
             <Text className="text-text-primary text-2xl font-bold flex-1 mr-3">
@@ -167,27 +158,13 @@ export default function GoodsDetailScreen() {
           </View>
         </View>
       </ScrollView>
-      <View className="absolute bottom-0 left-0 right-0 flex-row gap-3 px-4 py-4 bg-background border-t border-border">
-        <Pressable
-          onPress={() => router.dismiss()}
-          className="flex-1 py-4 rounded-xl border border-border items-center active:opacity-70"
-        >
-          <Text className="text-text-primary font-semibold">
-            {t("add.cancel")}
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={handleCommit}
-          disabled={isSubmitting}
-          className="flex-1 py-4 rounded-xl bg-gold items-center active:opacity-70"
-        >
-          {isSubmitting ? (
-            <ActivityIndicator color="#0D0D0D" />
-          ) : (
-            <Text className="text-black font-bold">{t("add.editItem")}</Text>
-          )}
-        </Pressable>
-      </View>
+      {isOpen && (
+        <MenuModal
+          item={item.goods_id}
+          isOpen={isOpen}
+          isClosing={() => setIsOpen(!isOpen)}
+        />
+      )}
     </SafeAreaView>
   );
 }
