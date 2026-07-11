@@ -2,7 +2,7 @@ import { useAuth } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -18,22 +18,38 @@ import {
   View,
 } from "react-native";
 
-const PRESET_TAGS = ["Electronics", "Apparel", "Furniture", "Books", "Other"];
+export const PRESET_TAGS = [
+  "Electronics",
+  "Apparel",
+  "Furniture",
+  "Books",
+  "Other",
+];
 
 export default function AddScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session } = useAuth();
   const [isKeep, setIsKeep] = useState(true);
+  const [tags, setTags] = useState<string[]>([]);
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [note, setNote] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    const fetchTags = async () => {
+      const { data, error } = await supabase.from("tags").select("tag_name");
+      if (error) return;
+      setTags(data.map((item) => item.tag_name));
+    };
+    fetchTags();
+  }, []);
+
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   };
 
@@ -84,7 +100,10 @@ export default function AddScreen() {
       resetForm();
       router.dismiss();
     } catch (error) {
-      Alert.alert(t("auth.errorTitle"), error instanceof Error ? error.message : String(error));
+      Alert.alert(
+        t("auth.errorTitle"),
+        error instanceof Error ? error.message : String(error),
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -96,7 +115,9 @@ export default function AddScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <View className="flex-row justify-between items-center px-4 pt-4 pb-2">
-        <Text className="text-gold text-lg font-bold tracking-wider">Karireco</Text>
+        <Text className="text-gold text-lg font-bold tracking-wider">
+          Karireco
+        </Text>
         <TouchableOpacity
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           className="p-2"
@@ -112,7 +133,9 @@ export default function AddScreen() {
         <View className="px-4 pt-2">
           <Pressable className="bg-surface border border-dashed border-border rounded-xl h-44 items-center justify-center mb-4 active:opacity-70">
             <MaterialIcons name="add-a-photo" size={32} color="#C9A84C" />
-            <Text className="text-text-secondary text-sm mt-2">{t("add.addImage")}</Text>
+            <Text className="text-text-secondary text-sm mt-2">
+              {t("add.addImage")}
+            </Text>
           </Pressable>
 
           <View className="bg-surface border border-border rounded-xl px-4 py-4 mb-5">
@@ -166,17 +189,21 @@ export default function AddScreen() {
             {t("add.category")}
           </Text>
           <View className="flex-row flex-wrap gap-2 mb-5">
-            {PRESET_TAGS.map((tag) => (
+            {tags.map((tag) => (
               <Pressable
                 key={tag}
                 onPress={() => toggleTag(tag)}
                 className={`px-4 py-2 rounded-full border ${
-                  selectedTags.includes(tag) ? "bg-gold border-gold" : "bg-surface border-border"
+                  selectedTags.includes(tag)
+                    ? "bg-gold border-gold"
+                    : "bg-surface border-border"
                 }`}
               >
                 <Text
                   className={`text-sm ${
-                    selectedTags.includes(tag) ? "text-black font-bold" : "text-text-secondary"
+                    selectedTags.includes(tag)
+                      ? "text-black font-bold"
+                      : "text-text-secondary"
                   }`}
                 >
                   {tag}
@@ -209,7 +236,9 @@ export default function AddScreen() {
           onPress={() => router.dismiss()}
           className="flex-1 py-4 rounded-xl border border-border items-center active:opacity-70"
         >
-          <Text className="text-text-primary font-semibold">{t("add.cancel")}</Text>
+          <Text className="text-text-primary font-semibold">
+            {t("add.cancel")}
+          </Text>
         </Pressable>
         <Pressable
           onPress={handleCommit}
