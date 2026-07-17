@@ -43,6 +43,7 @@ export default function TabLayout() {
         name="add"
         options={{
           title: "Add",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="add" size={size} color={color} />
           ),
@@ -52,6 +53,7 @@ export default function TabLayout() {
         name="archive"
         options={{
           title: "Archive",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="archive" size={size} color={color} />
           ),

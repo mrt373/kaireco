@@ -1,8 +1,9 @@
 import { useAuth } from "@/lib/auth";
+import useTags from "@/lib/hooks/useTags";
 import { supabase } from "@/lib/supabase";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -14,51 +15,27 @@ import {
   Switch,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
-
-export const PRESET_TAGS = [
-  "Electronics",
-  "Apparel",
-  "Furniture",
-  "Books",
-  "Other",
-];
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AddScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session } = useAuth();
   const [isKeep, setIsKeep] = useState(true);
-  const [tags, setTags] = useState<string[]>([]);
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [note, setNote] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    const fetchTags = async () => {
-      const { data, error } = await supabase.from("tags").select("tag_name");
-      if (error) return;
-      setTags(data.map((item) => item.tag_name));
-    };
-    fetchTags();
-  }, []);
-
-  const toggleTag = (tag: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
-    );
-  };
+  const { tags, selectedTags, resetSelectedTags, toggleTag } = useTags();
 
   const resetForm = () => {
     setIsKeep(true);
     setTitle("");
     setPrice("");
     setNote("");
-    setSelectedTags([]);
+    resetSelectedTags();
   };
 
   const handleCommit = async () => {
@@ -98,8 +75,9 @@ export default function AddScreen() {
       }
 
       resetForm();
-      router.dismiss();
+      router.back();
     } catch (error) {
+      console.log(JSON.stringify(error));
       Alert.alert(
         t("auth.errorTitle"),
         error instanceof Error ? error.message : String(error),
@@ -114,144 +92,141 @@ export default function AddScreen() {
       className="flex-1 bg-background"
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <View className="flex-row justify-between items-center px-4 pt-4 pb-2">
-        <Text className="text-gold text-lg font-bold tracking-wider">
-          Karireco
-        </Text>
-        <TouchableOpacity
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          className="p-2"
+      <SafeAreaView className="flex-1 bg-background">
+        <View className="items-center px-4 pt-4 pb-2 ">
+          <Text className="text-text-primary text-lg font-bold ml-2">
+            {"追加"}
+          </Text>
+        </View>
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 120 }}
         >
-          <MaterialIcons name="delete-outline" size={22} color="#555555" />
-        </TouchableOpacity>
-      </View>
+          <View className="px-4 pt-2">
+            <Pressable className="bg-surface border border-dashed border-border rounded-xl h-44 items-center justify-center mb-4 active:opacity-70">
+              <MaterialIcons name="add-a-photo" size={32} color="#C9A84C" />
+              <Text className="text-text-secondary text-sm mt-2">
+                {t("add.addImage")}
+              </Text>
+            </Pressable>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 120 }}
-      >
-        <View className="px-4 pt-2">
-          <Pressable className="bg-surface border border-dashed border-border rounded-xl h-44 items-center justify-center mb-4 active:opacity-70">
-            <MaterialIcons name="add-a-photo" size={32} color="#C9A84C" />
-            <Text className="text-text-secondary text-sm mt-2">
-              {t("add.addImage")}
-            </Text>
-          </Pressable>
-
-          <View className="bg-surface border border-border rounded-xl px-4 py-4 mb-5">
-            <View className="flex-row justify-between items-center">
-              <View>
-                <Text className="text-text-primary text-sm font-semibold">
-                  {t("add.curatedStatus")}
-                </Text>
-                <Text className="text-text-muted text-xs mt-0.5">
-                  {isKeep ? t("add.statusKeep") : t("add.statusSell")}
-                </Text>
+            <View className="bg-surface border border-border rounded-xl px-4 py-4 mb-5">
+              <View className="flex-row justify-between items-center">
+                <View>
+                  <Text className="text-text-primary text-sm font-semibold">
+                    {t("add.curatedStatus")}
+                  </Text>
+                  <Text className="text-text-muted text-xs mt-0.5">
+                    {isKeep ? t("add.statusKeep") : t("add.statusSell")}
+                  </Text>
+                </View>
+                <Switch
+                  value={isKeep}
+                  onValueChange={setIsKeep}
+                  trackColor={{ false: "#2A2A2A", true: "#8A6E2F" }}
+                  thumbColor={isKeep ? "#C9A84C" : "#555555"}
+                />
               </View>
-              <Switch
-                value={isKeep}
-                onValueChange={setIsKeep}
-                trackColor={{ false: "#2A2A2A", true: "#8A6E2F" }}
-                thumbColor={isKeep ? "#C9A84C" : "#555555"}
+            </View>
+
+            <Text className="text-gold text-xs uppercase tracking-widest mb-2">
+              {t("add.itemDesignation")}
+            </Text>
+            <View className="bg-surface border border-border rounded-xl px-4 py-3 mb-5">
+              <TextInput
+                className="text-text-primary text-sm"
+                placeholder={t("add.itemPlaceholder")}
+                placeholderTextColor="#555555"
+                value={title}
+                onChangeText={setTitle}
+              />
+            </View>
+
+            <Text className="text-gold text-xs uppercase tracking-widest mb-2">
+              {t("add.acquisitionValue")}
+            </Text>
+            <View className="bg-surface border border-border rounded-xl px-4 py-3 mb-5 flex-row items-center">
+              <Text className="text-text-secondary mr-2">$</Text>
+              <TextInput
+                className="text-text-primary text-sm flex-1"
+                placeholder="0.00"
+                placeholderTextColor="#555555"
+                keyboardType="decimal-pad"
+                value={price}
+                onChangeText={setPrice}
+              />
+            </View>
+
+            <Text className="text-gold text-xs uppercase tracking-widest mb-2">
+              {t("add.category")}
+            </Text>
+            <View className="flex-row flex-wrap gap-2 mb-5">
+              {tags.map((tag) => (
+                <Pressable
+                  key={tag}
+                  onPress={() => toggleTag(tag)}
+                  className={`px-4 py-2 rounded-full border ${
+                    selectedTags.includes(tag)
+                      ? "bg-gold border-gold"
+                      : "bg-surface border-border"
+                  }`}
+                >
+                  <Text
+                    className={`text-sm ${
+                      selectedTags.includes(tag)
+                        ? "text-black font-bold"
+                        : "text-text-secondary"
+                    }`}
+                  >
+                    {tag}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+
+            <Text className="text-gold text-xs uppercase tracking-widest mb-2">
+              {t("add.intentReflection")}
+            </Text>
+            <View className="bg-surface border border-border rounded-xl px-4 py-3">
+              <TextInput
+                className="text-text-primary text-sm"
+                placeholder={t("add.notePlaceholder")}
+                placeholderTextColor="#555555"
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+                value={note}
+                onChangeText={setNote}
+                style={{ minHeight: 100 }}
               />
             </View>
           </View>
-
-          <Text className="text-gold text-xs uppercase tracking-widest mb-2">
-            {t("add.itemDesignation")}
-          </Text>
-          <View className="bg-surface border border-border rounded-xl px-4 py-3 mb-5">
-            <TextInput
-              className="text-text-primary text-sm"
-              placeholder={t("add.itemPlaceholder")}
-              placeholderTextColor="#555555"
-              value={title}
-              onChangeText={setTitle}
-            />
-          </View>
-
-          <Text className="text-gold text-xs uppercase tracking-widest mb-2">
-            {t("add.acquisitionValue")}
-          </Text>
-          <View className="bg-surface border border-border rounded-xl px-4 py-3 mb-5 flex-row items-center">
-            <Text className="text-text-secondary mr-2">$</Text>
-            <TextInput
-              className="text-text-primary text-sm flex-1"
-              placeholder="0.00"
-              placeholderTextColor="#555555"
-              keyboardType="decimal-pad"
-              value={price}
-              onChangeText={setPrice}
-            />
-          </View>
-
-          <Text className="text-gold text-xs uppercase tracking-widest mb-2">
-            {t("add.category")}
-          </Text>
-          <View className="flex-row flex-wrap gap-2 mb-5">
-            {tags.map((tag) => (
-              <Pressable
-                key={tag}
-                onPress={() => toggleTag(tag)}
-                className={`px-4 py-2 rounded-full border ${
-                  selectedTags.includes(tag)
-                    ? "bg-gold border-gold"
-                    : "bg-surface border-border"
-                }`}
-              >
-                <Text
-                  className={`text-sm ${
-                    selectedTags.includes(tag)
-                      ? "text-black font-bold"
-                      : "text-text-secondary"
-                  }`}
-                >
-                  {tag}
+          <View className="  flex-row gap-3 px-4 py-4 bg-background  border-border">
+            <Pressable
+              onPress={() => router.back()}
+              className="flex-1 py-4 rounded-xl border border-border items-center active:opacity-70"
+            >
+              <Text className="text-text-primary font-semibold">
+                {t("add.cancel")}
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={handleCommit}
+              disabled={isSubmitting}
+              className="flex-1 py-4 rounded-xl bg-gold items-center active:opacity-70"
+            >
+              {isSubmitting ? (
+                <ActivityIndicator color="#0D0D0D" />
+              ) : (
+                <Text className="text-black font-bold">
+                  {t("add.commitItem")}
                 </Text>
-              </Pressable>
-            ))}
+              )}
+            </Pressable>
           </View>
-
-          <Text className="text-gold text-xs uppercase tracking-widest mb-2">
-            {t("add.intentReflection")}
-          </Text>
-          <View className="bg-surface border border-border rounded-xl px-4 py-3">
-            <TextInput
-              className="text-text-primary text-sm"
-              placeholder={t("add.notePlaceholder")}
-              placeholderTextColor="#555555"
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-              value={note}
-              onChangeText={setNote}
-              style={{ minHeight: 100 }}
-            />
-          </View>
-        </View>
-      </ScrollView>
-
-      <View className="absolute bottom-0 left-0 right-0 flex-row gap-3 px-4 py-4 bg-background border-t border-border">
-        <Pressable
-          onPress={() => router.dismiss()}
-          className="flex-1 py-4 rounded-xl border border-border items-center active:opacity-70"
-        >
-          <Text className="text-text-primary font-semibold">
-            {t("add.cancel")}
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={handleCommit}
-          disabled={isSubmitting}
-          className="flex-1 py-4 rounded-xl bg-gold items-center active:opacity-70"
-        >
-          {isSubmitting ? (
-            <ActivityIndicator color="#0D0D0D" />
-          ) : (
-            <Text className="text-black font-bold">{t("add.commitItem")}</Text>
-          )}
-        </Pressable>
-      </View>
+        </ScrollView>
+      </SafeAreaView>
     </KeyboardAvoidingView>
   );
 }
