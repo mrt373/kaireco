@@ -10,6 +10,7 @@ module.exports = {
         "surface-elevated": "#252525",
         gold: "#C5A059",
         "gold-muted": "#7A6235",
+        "gold-muted-2": "#C9A84C",
         "text-primary": "#FFFFFF",
         "text-secondary": "#888888",
         "text-muted": "#555555",
