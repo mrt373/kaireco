@@ -20,6 +20,7 @@ const GOODS_SELECT = `
   goods_tags ( tags ( tag_name ) )
 `;
 
+// Row型からGoods型に変換する関数
 function mapRow(row: GoodsRow): Goods {
   return {
     goods_id: row.goods_id,
@@ -39,6 +40,7 @@ function mapRow(row: GoodsRow): Goods {
   };
 }
 
+// ユーザーのアクティブな商品を取得する関数
 export async function fetchActiveGoods(userId: string): Promise<Goods[]> {
   const { data, error } = await supabase
     .from("goods")
@@ -50,6 +52,7 @@ export async function fetchActiveGoods(userId: string): Promise<Goods[]> {
   return (data as unknown as GoodsRow[]).map(mapRow);
 }
 
+//idから情報を取得する関数
 export async function fetchGoodsById(goodsId: string): Promise<Goods | null> {
   const { data, error } = await supabase
     .from("goods")
