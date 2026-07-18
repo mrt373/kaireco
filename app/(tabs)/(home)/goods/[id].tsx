@@ -2,8 +2,8 @@ import MenuModal from "@/components/MenuModal";
 import { fetchGoodsById } from "@/lib/goods";
 import { Goods } from "@/types/goods";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -23,19 +23,21 @@ export default function GoodsDetailScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    let isActive = true;
-    fetchGoodsById(id)
-      .then((data) => {
-        if (isActive) setItem(data);
-      })
-      .finally(() => {
-        if (isActive) setIsLoading(false);
-      });
-    return () => {
-      isActive = false;
-    };
-  }, [id]);
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+      fetchGoodsById(id)
+        .then((data) => {
+          if (isActive) setItem(data);
+        })
+        .finally(() => {
+          if (isActive) setIsLoading(false);
+        });
+      return () => {
+        isActive = false;
+      };
+    }, [id]),
+  );
 
   if (isLoading) {
     return (
