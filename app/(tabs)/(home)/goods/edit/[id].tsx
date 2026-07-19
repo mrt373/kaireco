@@ -1,6 +1,7 @@
 import { fetchGoodsById } from "@/lib/goods";
 import useTags from "@/lib/hooks/useTags";
 import { supabase } from "@/lib/supabase";
+import { Goods } from "@/types/goods";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { t } from "i18next";
@@ -23,7 +24,7 @@ export default function GoodsEditScreen() {
   const [editTitle, setEditTitle] = useState("");
   const [editValue, setEditValue] = useState("");
   const [editText, setEditText] = useState("");
-  const [SelectedItem, setSelectedItem] = useState(null);
+  const [SelectedItem, setSelectedItem] = useState<Goods | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -65,12 +66,6 @@ export default function GoodsEditScreen() {
       console.log("NG");
     }
   };
-
-  //   user_id: session.user.id,
-  // title: title.trim(),
-  // text: note.trim() || null,
-  // price: parseFloat(price) || 0,
-  // status: isKeep ? "keep" : "to_sell",
 
   return (
     <SafeAreaView className="flex-1 bg-background">

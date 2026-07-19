@@ -1,7 +1,8 @@
+import { supabase } from "@/lib/supabase";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Modal, Pressable, Text, View } from "react-native";
+import { Alert, Modal, Pressable, Text, View } from "react-native";
 
 interface MenuModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface MenuModalProps {
 
 export default function MenuModal({ item, isOpen, isClosing }: MenuModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDelete, setIsdelete] = useState(false);
 
   const handleEdit = async () => {
     setIsSubmitting(true);
@@ -26,8 +28,29 @@ export default function MenuModal({ item, isOpen, isClosing }: MenuModalProps) {
     alert("アーカイブ機能はまだ実装されていません。");
   };
 
-  const handleDelete = async () => {
-    alert("削除機能はまだ実装されていません。");
+  const createTwoButtonAlert = (id: string) =>
+    Alert.alert("アイテム削除", "本当に削除しますか？", [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel",
+      },
+      {
+        text: "OK",
+        onPress: async () => {
+          const { error } = await supabase
+            .from("goods")
+            .delete()
+            .eq("goods_id", id);
+          if (error) throw error;
+          isClosing();
+          router.back();
+        },
+      },
+    ]);
+
+  const handleDelete = async (id: string) => {
+    createTwoButtonAlert(id);
   };
 
   return (
@@ -67,7 +90,7 @@ export default function MenuModal({ item, isOpen, isClosing }: MenuModalProps) {
           <Text className="text-text-primary text-lg">アーカイブ</Text>
         </Pressable>
         <Pressable
-          onPress={handleDelete}
+          onPress={() => handleDelete(item)}
           className="flex-row  py-8 px-4  rounded-xl items-left active:opacity-70"
         >
           <MaterialIcons
