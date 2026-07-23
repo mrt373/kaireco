@@ -63,6 +63,7 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: "Profile",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="person-outline" size={size} color={color} />
           ),

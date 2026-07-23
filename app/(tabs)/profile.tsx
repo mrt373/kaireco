@@ -2,7 +2,8 @@ import { supabase } from "@/lib/supabase";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import { Alert, Pressable, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
@@ -34,11 +35,12 @@ export default function ProfileScreen() {
       description: t("profile.profileEditDesc"),
       onPress: () => router.push("/profile-edit"),
     },
+
     {
       icon: "notifications-none",
-      label: t("profile.notifications"),
-      description: t("profile.notificationsDesc"),
-      onPress: () => router.push("/notifications"),
+      label: t("設定"),
+      description: t("設定の変更"),
+      onPress: () => router.push("/settings"),
     },
 
     {
@@ -51,10 +53,13 @@ export default function ProfileScreen() {
   ];
 
   return (
-    <ScrollView
-      className="flex-1 bg-background"
-      contentContainerStyle={{ paddingBottom: 100 }}
-    >
+    <SafeAreaView className="flex-1 bg-background">
+      <View className="items-center px-4 pt-4 pb-2 ">
+        <Text className="text-text-primary text-lg font-bold ml-2">
+          {"プロフィール"}
+        </Text>
+      </View>
+
       <View className="px-4 pt-6">
         <View className="items-center mb-8">
           <View className="w-20 h-20 rounded-full bg-surface border-2 border-gold items-center justify-center mb-3">
@@ -137,6 +142,6 @@ export default function ProfileScreen() {
           © 2024 Karireco v1.0.0
         </Text>
       </View>
-    </ScrollView>
+    </SafeAreaView>
   );
 }
