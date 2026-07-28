@@ -1,16 +1,26 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabase";
 
+type Tag = {
+  tag_name: string;
+  tag_id: string;
+};
+
 export default function useTags() {
-  const [tags, setTags] = useState<string[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
+  const fetchTags = async () => {
+    const { data, error } = await supabase
+      .from("tags")
+      .select("tag_name, tag_id");
+    if (error) return;
+    setTags(
+      data.map((item) => ({ tag_name: item.tag_name, tag_id: item.tag_id })),
+    );
+  };
+
   useEffect(() => {
-    const fetchTags = async () => {
-      const { data, error } = await supabase.from("tags").select("tag_name");
-      if (error) return;
-      setTags(data.map((item) => item.tag_name));
-    };
     fetchTags();
   }, []);
 
@@ -21,5 +31,12 @@ export default function useTags() {
   };
   const resetSelectedTags = () => setSelectedTags([]);
 
-  return { tags, selectedTags, toggleTag, resetSelectedTags, setSelectedTags };
+  return {
+    tags,
+    selectedTags,
+    toggleTag,
+    resetSelectedTags,
+    setSelectedTags,
+    fetchTags,
+  };
 }

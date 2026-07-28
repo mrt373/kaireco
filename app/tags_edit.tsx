@@ -1,7 +1,8 @@
+import useTags from "@/lib/hooks/useTags";
+import { supabase } from "@/lib/supabase";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import {
   ScrollView,
   Text,
@@ -11,15 +12,24 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 export default function ProfileEditScreen() {
-  const { t } = useTranslation();
   const router = useRouter();
-  const [search, setSearch] = useState("");
   const [tag, setTag] = useState("");
+  const { tags, fetchTags } = useTags();
+  const numberOfTags = tags.length;
 
-  const handleSave = () => {
-    // Alert.alert(t("common.save"), t("profileEdit.savedMessage"));
-    // router.back();
-    alert("保存しました");
+  const handleAdd = async () => {
+    await supabase.from("tags").insert({ tag_name: tag });
+    alert("タグを追加しました");
+    fetchTags();
+    setTag("");
+  };
+
+  const handleDelete = async (id: string) => {
+    await supabase.from("tags").delete().eq("tag_id", id);
+    console.log("削除するid:", id);
+
+    fetchTags();
+    alert("削除しました");
   };
 
   return (
@@ -41,7 +51,7 @@ export default function ProfileEditScreen() {
         className="flex-1 px-4 pt-6"
         contentContainerStyle={{ paddingBottom: 40 }}
       >
-        <Text className="text-gold-muted-3 text-md uppercase tracking-widest mb-2">
+        {/* <Text className="text-gold-muted-3 text-md uppercase tracking-widest mb-2">
           タグを検索　FILTER TAGS
         </Text>
         <View className="bg-surface border border-border rounded-xl px-4 py-3 mb-3">
@@ -52,7 +62,7 @@ export default function ProfileEditScreen() {
             value={search}
             onChangeText={setSearch}
           />
-        </View>
+        </View> */}
         <Text className="text-gold-muted-3 text-md uppercase tracking-widest mb-2 mt-5">
           タグの作成 CREATE NEW
         </Text>
@@ -65,7 +75,7 @@ export default function ProfileEditScreen() {
             placeholderTextColor="#555555"
           />
           <TouchableOpacity
-            onPress={handleSave}
+            onPress={handleAdd}
             className="bg-gold w-1/5 rounded-md py-4 items-centeractive:opacity-80"
           >
             <Text className="text-background font-bold px-4 text-center">
@@ -78,13 +88,20 @@ export default function ProfileEditScreen() {
             Active Tags
           </Text>
           <Text className="text-text-primary bg-surface py-2 px-4 rounded-3xl">
-            6 Tags
+            {numberOfTags} Tags
           </Text>
         </View>
-        <View className=" flex-row justify-between w-full text-text-primary bg-surface border border-border p-5 mt-3 rounded-sm ">
-          <Text className="text-text-primary">カメラ</Text>
-          <Ionicons name="trash-outline" size={20} color="#FFB4AB" />
-        </View>
+        {tags.map((tag) => (
+          <View
+            key={tag.tag_id}
+            className=" flex-row justify-between w-full text-text-primary bg-surface border border-border p-5 mt-3 rounded-sm "
+          >
+            <Text className="text-text-primary">{tag.tag_name}</Text>
+            <TouchableOpacity onPress={() => handleDelete(tag.tag_id)}>
+              <Ionicons name="trash-outline" size={20} color="#FFB4AB" />
+            </TouchableOpacity>
+          </View>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
