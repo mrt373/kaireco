@@ -39,6 +39,7 @@ export default function GoodsEditScreen() {
         setEditValue(data?.price?.toString() || "0.00");
         setEditText(data?.text || "");
         setSelectedTags(data?.tags || []);
+        setIsKeep(data?.status === "keep");
       })
       .finally(() => {
         if (isActive) setIsLoading(false);
@@ -99,7 +100,7 @@ export default function GoodsEditScreen() {
           </Pressable>
           <Pressable
             onPress={() => router.back()}
-            className="flex-1 py-4 mb-8 justify-center rounded-xl border border-border  bg-surface items-center active:opacity-70 w-1/2 self-center"
+            className="flex-1 py-3 mb-8 justify-center rounded-xl border border-border  bg-surface items-center active:opacity-70 w-1/2 self-center"
           >
             <Text className="text-gold-muted-2 font-semibold flex align-middle  ">
               写真を変更する
@@ -157,22 +158,22 @@ export default function GoodsEditScreen() {
           <View className="flex-row flex-wrap gap-2 mb-5">
             {tags.map((tag) => (
               <Pressable
-                key={tag}
-                onPress={() => toggleTag(tag)}
+                key={tag.tag_id}
+                onPress={() => toggleTag(tag.tag_name)}
                 className={`px-4 py-2 rounded-full border ${
-                  selectedTags.includes(tag)
+                  selectedTags.includes(tag.tag_name)
                     ? "bg-gold border-gold"
                     : "bg-surface border-border"
                 }`}
               >
                 <Text
                   className={`text-sm ${
-                    selectedTags.includes(tag)
+                    selectedTags.includes(tag.tag_name)
                       ? "text-black font-bold"
                       : "text-text-secondary"
                   }`}
                 >
-                  {tag}
+                  {tag.tag_name}
                 </Text>
               </Pressable>
             ))}

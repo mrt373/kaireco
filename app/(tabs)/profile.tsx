@@ -37,7 +37,7 @@ export default function ProfileScreen() {
     },
 
     {
-      icon: "notifications-none",
+      icon: "settings",
       label: t("設定"),
       description: t("設定の変更"),
       onPress: () => router.push("/settings"),

@@ -1,6 +1,5 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -8,9 +7,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Settings() {
   const { t } = useTranslation();
   const router = useRouter();
-  const [pushEnabled, setPushEnabled] = useState(true);
-  const [archiveReminders, setArchiveReminders] = useState(true);
-  const [weeklySummary, setWeeklySummary] = useState(false);
+  // const [pushEnabled, setPushEnabled] = useState(true);
+  // const [archiveReminders, setArchiveReminders] = useState(true);
+  // const [weeklySummary, setWeeklySummary] = useState(false);
 
   const MENU_ITEMS: {
     icon: keyof typeof MaterialIcons.glyphMap;
@@ -20,14 +19,14 @@ export default function Settings() {
     onPress?: () => void;
   }[] = [
     {
-      icon: "person-outline",
+      icon: "notifications-none",
       label: "通知設定",
       description: t("profile.profileEditDesc"),
       onPress: () => router.push("/notifications"),
     },
 
     {
-      icon: "notifications-none",
+      icon: "tag",
       label: "タグ設定",
       description: t("設定の変更"),
       onPress: () => router.push("/tags_edit"),

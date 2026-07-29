@@ -164,22 +164,22 @@ export default function AddScreen() {
             <View className="flex-row flex-wrap gap-2 mb-5">
               {tags.map((tag) => (
                 <Pressable
-                  key={tag}
-                  onPress={() => toggleTag(tag)}
+                  key={tag.tag_id}
+                  onPress={() => toggleTag(tag.tag_name)}
                   className={`px-4 py-2 rounded-full border ${
-                    selectedTags.includes(tag)
+                    selectedTags.includes(tag.tag_name)
                       ? "bg-gold border-gold"
                       : "bg-surface border-border"
                   }`}
                 >
                   <Text
                     className={`text-sm ${
-                      selectedTags.includes(tag)
+                      selectedTags.includes(tag.tag_name)
                         ? "text-black font-bold"
                         : "text-text-secondary"
                     }`}
                   >
-                    {tag}
+                    {tag.tag_name}
                   </Text>
                 </Pressable>
               ))}

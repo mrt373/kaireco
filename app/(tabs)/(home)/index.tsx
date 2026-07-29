@@ -127,7 +127,7 @@ export default function HomeScreen() {
           </Text>
           <Text className="text-text-muted">•</Text>
           <Text className="text-text-secondary text-sm">
-            {t("home.toSell")}{" "}
+            {t("home.toSell")}
             <Text className="text-gold font-semibold">
               {goods.filter((g) => g.status === "to_sell").length}
             </Text>
