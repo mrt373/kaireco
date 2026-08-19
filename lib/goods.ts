@@ -62,3 +62,15 @@ export async function fetchGoodsById(goodsId: string): Promise<Goods | null> {
   if (error) throw error;
   return data ? mapRow(data as unknown as GoodsRow) : null;
 }
+
+// ユーザーのアーカイブ済み商品を取得する関数
+export async function fetchArchivedGoods(userId: string): Promise<Goods[]> {
+  const { data, error } = await supabase
+    .from("goods")
+    .select(GOODS_SELECT)
+    .eq("user_id", userId)
+    .not("archived_at", "is", null)
+    .order("archived_at", { ascending: false });
+  if (error) throw error;
+  return (data as unknown as GoodsRow[]).map(mapRow);
+}
