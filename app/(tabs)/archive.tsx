@@ -1,7 +1,9 @@
 import ArchiveCard from "@/components/ArchiveCard";
-import { MOCK_ARCHIVED } from "@/constants/mockData";
-import { ArchiveMethod } from "@/types/goods";
-import { useMemo, useState } from "react";
+import { useAuth } from "@/lib/auth";
+import { fetchArchivedGoods } from "@/lib/goods";
+import { ArchiveMethod, Goods } from "@/types/goods";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -10,6 +12,27 @@ export default function ArchiveScreen() {
   const { t } = useTranslation();
   const [selectedMethod, setSelectedMethod] = useState<ArchiveMethod | "all">(
     "all",
+  );
+  const [goods, setGoods] = useState<Goods[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { session } = useAuth();
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!session?.user) return;
+      let isActive = true;
+      setIsLoading(true);
+      fetchArchivedGoods(session.user.id)
+        .then((data) => {
+          if (isActive) setGoods(data);
+        })
+        .finally(() => {
+          if (isActive) setIsLoading(false);
+        });
+      return () => {
+        isActive = false;
+      };
+    }, [session?.user]),
   );
 
   const METHOD_FILTERS: { label: string; value: ArchiveMethod | "all" }[] = [
@@ -20,17 +43,10 @@ export default function ArchiveScreen() {
     { label: t("archive.other"), value: "other" },
   ];
 
-  export const ARCHIVE_METHODS = [
-    "donated",
-    "sold",
-    "recycled",
-    "other",
-  ] as const;
-
   const filtered = useMemo(() => {
-    if (selectedMethod === "all") return MOCK_ARCHIVED;
-    return MOCK_ARCHIVED.filter((g) => g.archive_method === selectedMethod);
-  }, [selectedMethod]);
+    if (selectedMethod === "all") return goods;
+    return goods.filter((g) => g.archive_method === selectedMethod);
+  }, [selectedMethod, goods]);
 
   return (
     <SafeAreaView className="flex-1 bg-background px-4 pt-4">
@@ -45,14 +61,14 @@ export default function ArchiveScreen() {
           {t("archive.totalRemoved")}
         </Text>
         <Text className="text-text-primary text-4xl font-bold mb-1">
-          {MOCK_ARCHIVED.length}
+          {goods.length}
         </Text>
         <Text className="text-text-muted text-xs mb-4">
           {t("archive.transformations")}
         </Text>
         <View className="flex-row gap-4">
           {METHOD_FILTERS.slice(1).map((m) => {
-            const count = MOCK_ARCHIVED.filter(
+            const count = goods.filter(
               (g) => g.archive_method === m.value,
             ).length;
             return (
