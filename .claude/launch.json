@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "working-mom-blog",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "/Users/Minami.M/Documents/working-mom-blog"],
+      "port": 3000
+    }
+  ]
+}
