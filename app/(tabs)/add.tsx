@@ -1,3 +1,4 @@
+import ItemImagePicker from "@/components/ItemImagePicker";
 import { useAuth } from "@/lib/auth";
 import useTags from "@/lib/hooks/useTags";
 import { supabase } from "@/lib/supabase";
@@ -29,6 +30,7 @@ export default function AddScreen() {
   const [note, setNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { tags, selectedTags, resetSelectedTags, toggleTag } = useTags();
+  const [upLoadImage, setUploadImage] = useState(false);
 
   const resetForm = () => {
     setIsKeep(true);
@@ -36,6 +38,11 @@ export default function AddScreen() {
     setPrice("");
     setNote("");
     resetSelectedTags();
+  };
+
+  const onClickUploadImage = () => {
+    setUploadImage(!upLoadImage);
+    console.log(upLoadImage);
   };
 
   const handleCommit = async () => {
@@ -97,6 +104,16 @@ export default function AddScreen() {
           <Text className="text-text-primary text-lg font-bold ml-2">
             {"追加"}
           </Text>
+          {upLoadImage && (
+            <ItemImagePicker
+              imageUrl={null}
+              onImageChange={(url: string) => {
+                console.log("Selected image:", url);
+              }}
+              isOpen={upLoadImage}
+              isClosing={() => setUploadImage(false)}
+            />
+          )}
         </View>
 
         <ScrollView
@@ -104,7 +121,10 @@ export default function AddScreen() {
           contentContainerStyle={{ paddingBottom: 120 }}
         >
           <View className="px-4 pt-2">
-            <Pressable className="bg-surface border border-dashed border-border rounded-xl h-44 items-center justify-center mb-4 active:opacity-70">
+            <Pressable
+              onPress={onClickUploadImage}
+              className="bg-surface border border-dashed border-border rounded-xl h-44 items-center justify-center mb-4 active:opacity-70"
+            >
               <MaterialIcons name="add-a-photo" size={32} color="#C9A84C" />
               <Text className="text-text-secondary text-sm mt-2">
                 {t("add.addImage")}
