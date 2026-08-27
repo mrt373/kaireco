@@ -1,6 +1,6 @@
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
-import { Alert, Button, Image, Modal, Pressable, View } from "react-native";
+import { Alert, Image, Modal, Pressable, Text, View } from "react-native";
 
 type Props = {
   imageUrl: string | null;
@@ -77,9 +77,22 @@ export default function ItemImagePicker({
       onRequestClose={isClosing}
     >
       <Pressable className="flex-1" onPress={isClosing} />
-      <View className="flex-row px-4 pt-4 pb-2  bg-background rounded-lg h-2/5 ">
-        <Button title="Pick an image from camera roll" onPress={pickImage} />
-        <Button title="Take a photo" onPress={takePhoto} />
+      <View className="flex-row  gap-3 px-4 pt-4 pb-2  bg-background rounded-lg h-1/2 ">
+        <Pressable
+          onPress={pickImage}
+          // disabled={isSubmitting}
+          className="mt-5 flex-1 w-1/2 h-2/5  py-4 rounded-xl bg-gold bg-surface-elevated items-center active:opacity-70"
+        >
+          <Text className="text-text-primary">アルバムから選択</Text>
+        </Pressable>
+        <Pressable
+          onPress={takePhoto}
+          // disabled={isSubmitting}
+          className="mt-5 py-4 flex-1 w-1/2 h-2/5   rounded-xl   bg-surface-elevated items-center active:opacity-70"
+        >
+          <Text className="text-text-primary">写真を撮る</Text>
+        </Pressable>
+
         {image && (
           <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
         )}
