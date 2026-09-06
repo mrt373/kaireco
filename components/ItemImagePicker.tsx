@@ -1,3 +1,5 @@
+import { supabase } from "@/lib/supabase";
+import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import { Alert, Image, Modal, Pressable, Text, View } from "react-native";
@@ -7,6 +9,7 @@ type Props = {
   onImageChange: (url: string) => void;
   isOpen: boolean;
   isClosing: () => void;
+  image: string;
 };
 
 export default function ItemImagePicker({
@@ -17,9 +20,23 @@ export default function ItemImagePicker({
 }: Props) {
   const [image, setImage] = useState<string | null>(imageUrl);
 
-  const handleImageSelected = (uri: string) => {
+  const handleImageSelected = async (uri: string) => {
     setImage(uri);
-    onImageChange(uri);
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const fileName = `${crypto.randomUUID()}`;
+
+    const { error } = await supabase.storage
+      .from("images")
+      .upload(fileName, blob);
+    if (error) {
+      console.log("画像をアップロードできませんでした");
+    } else {
+      const { data } = supabase.storage.from("images").getPublicUrl(fileName);
+      onImageChange(data.publicUrl);
+      console.log("アップロードできました");
+    }
+    isClosing();
   };
 
   const pickImage = async () => {
@@ -77,20 +94,20 @@ export default function ItemImagePicker({
       onRequestClose={isClosing}
     >
       <Pressable className="flex-1" onPress={isClosing} />
-      <View className="flex-row  gap-3 px-4 pt-4 pb-2  bg-background rounded-lg h-1/2 ">
+      <View className="flex-row   gap-3 px-4 pt-4 pb-2  bg-background rounded-lg h-1/2 ">
         <Pressable
           onPress={pickImage}
-          // disabled={isSubmitting}
-          className="mt-5 flex-1 w-1/2 h-2/5  py-4 rounded-xl bg-gold bg-surface-elevated items-center active:opacity-70"
+          className="mt-5 flex-1 w-1/2 h-2/5  py-4 rounded-x bg-surface-elevated items-center active:opacity-70"
         >
-          <Text className="text-text-primary">アルバムから選択</Text>
+          <Text className="text-text-primary pb-5">アルバムから選択</Text>
+          <SimpleLineIcons name="picture" size={45} color="#FFFFFF" />
         </Pressable>
         <Pressable
           onPress={takePhoto}
-          // disabled={isSubmitting}
           className="mt-5 py-4 flex-1 w-1/2 h-2/5   rounded-xl   bg-surface-elevated items-center active:opacity-70"
         >
-          <Text className="text-text-primary">写真を撮る</Text>
+          <Text className="text-text-primary pb-5">写真を撮る</Text>
+          <Ionicons name="camera-outline" size={50} color="#FFFFFF" />
         </Pressable>
 
         {image && (

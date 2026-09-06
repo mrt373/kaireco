@@ -31,6 +31,7 @@ export default function AddScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { tags, selectedTags, resetSelectedTags, toggleTag } = useTags();
   const [upLoadImage, setUploadImage] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const resetForm = () => {
     setIsKeep(true);
@@ -104,16 +105,6 @@ export default function AddScreen() {
           <Text className="text-text-primary text-lg font-bold ml-2">
             {"追加"}
           </Text>
-          {upLoadImage && (
-            <ItemImagePicker
-              imageUrl={null}
-              onImageChange={(url: string) => {
-                console.log("Selected image:", url);
-              }}
-              isOpen={upLoadImage}
-              isClosing={() => setUploadImage(false)}
-            />
-          )}
         </View>
 
         <ScrollView
@@ -121,6 +112,17 @@ export default function AddScreen() {
           contentContainerStyle={{ paddingBottom: 120 }}
         >
           <View className="px-4 pt-2">
+            {upLoadImage && (
+              <ItemImagePicker
+                imageUrl={null}
+                onImageChange={(url: string) => {
+                  setImageUrl(url);
+                }}
+                isOpen={upLoadImage}
+                isClosing={() => setUploadImage(false)}
+                image={""}
+              />
+            )}
             <Pressable
               onPress={onClickUploadImage}
               className="bg-surface border border-dashed border-border rounded-xl h-44 items-center justify-center mb-4 active:opacity-70"
