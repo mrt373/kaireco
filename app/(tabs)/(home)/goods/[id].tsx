@@ -101,6 +101,7 @@ export default function GoodsDetailScreen() {
             resizeMode="cover"
           />
         </View>
+
         <View className="px-4">
           <View className="flex-row justify-between items-start mb-2">
             <Text className="text-text-primary text-2xl font-bold flex-1 mr-3">

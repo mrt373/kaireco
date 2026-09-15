@@ -1,15 +1,15 @@
 import { supabase } from "@/lib/supabase";
 import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
+import * as Crypto from "expo-crypto";
 import * as ImagePicker from "expo-image-picker";
-import React, { useState } from "react";
-import { Alert, Image, Modal, Pressable, Text, View } from "react-native";
+import React from "react";
+import { Alert, Modal, Pressable, Text, View } from "react-native";
 
 type Props = {
   imageUrl: string | null;
   onImageChange: (url: string) => void;
   isOpen: boolean;
   isClosing: () => void;
-  image: string;
 };
 
 export default function ItemImagePicker({
@@ -18,21 +18,29 @@ export default function ItemImagePicker({
   isOpen,
   isClosing,
 }: Props) {
-  const [image, setImage] = useState<string | null>(imageUrl);
-
   const handleImageSelected = async (uri: string) => {
-    setImage(uri);
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    const fileName = `${crypto.randomUUID()}`;
+    const fileName = Crypto.randomUUID();
+    const formData = new FormData();
+    formData.append("file", {
+      uri,
+      name: fileName,
+      type: "image/jpeg",
+    } as any);
 
     const { error } = await supabase.storage
-      .from("images")
-      .upload(fileName, blob);
+      .from("goods-images")
+      .upload(fileName, formData);
+
     if (error) {
-      console.log("画像をアップロードできませんでした");
+      console.log(
+        "画像をアップロードできませんでした",
+        JSON.stringify(error),
+        imageUrl,
+      );
     } else {
-      const { data } = supabase.storage.from("images").getPublicUrl(fileName);
+      const { data } = supabase.storage
+        .from("goods-images")
+        .getPublicUrl(fileName);
       onImageChange(data.publicUrl);
       console.log("アップロードできました");
     }
@@ -109,10 +117,6 @@ export default function ItemImagePicker({
           <Text className="text-text-primary pb-5">写真を撮る</Text>
           <Ionicons name="camera-outline" size={50} color="#FFFFFF" />
         </Pressable>
-
-        {image && (
-          <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
-        )}
       </View>
     </Modal>
   );

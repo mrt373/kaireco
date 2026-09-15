@@ -46,7 +46,7 @@ export async function fetchActiveGoods(userId: string): Promise<Goods[]> {
     .from("goods")
     .select(GOODS_SELECT)
     .eq("user_id", userId)
-    .in("status", ["keep", "to_sell"])
+    .in("status", ["keep"])
     .order("created_at", { ascending: false });
   if (error) throw error;
   return (data as unknown as GoodsRow[]).map(mapRow);

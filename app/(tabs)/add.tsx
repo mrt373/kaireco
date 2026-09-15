@@ -6,9 +6,11 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+
 import {
   ActivityIndicator,
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -38,12 +40,13 @@ export default function AddScreen() {
     setTitle("");
     setPrice("");
     setNote("");
+    setImageUrl(null);
     resetSelectedTags();
   };
 
   const onClickUploadImage = () => {
     setUploadImage(!upLoadImage);
-    console.log(upLoadImage);
+    // console.log(upLoadImage);
   };
 
   const handleCommit = async () => {
@@ -63,6 +66,7 @@ export default function AddScreen() {
           text: note.trim() || null,
           price: parseFloat(price) || 0,
           status: isKeep ? "keep" : "to_sell",
+          images: imageUrl ? [imageUrl] : [],
         })
         .select("goods_id")
         .single();
@@ -112,25 +116,32 @@ export default function AddScreen() {
           contentContainerStyle={{ paddingBottom: 120 }}
         >
           <View className="px-4 pt-2">
-            {upLoadImage && (
-              <ItemImagePicker
-                imageUrl={null}
-                onImageChange={(url: string) => {
-                  setImageUrl(url);
-                }}
-                isOpen={upLoadImage}
-                isClosing={() => setUploadImage(false)}
-                image={""}
-              />
-            )}
+            <ItemImagePicker
+              imageUrl={null}
+              onImageChange={(url: string) => {
+                setImageUrl(url);
+              }}
+              isOpen={upLoadImage}
+              isClosing={() => setUploadImage(false)}
+            />
+
             <Pressable
               onPress={onClickUploadImage}
               className="bg-surface border border-dashed border-border rounded-xl h-44 items-center justify-center mb-4 active:opacity-70"
             >
-              <MaterialIcons name="add-a-photo" size={32} color="#C9A84C" />
-              <Text className="text-text-secondary text-sm mt-2">
-                {t("add.addImage")}
-              </Text>
+              {imageUrl ? (
+                <Image
+                  source={{ uri: imageUrl }}
+                  style={{ width: 200, height: 200 }}
+                />
+              ) : (
+                <>
+                  <MaterialIcons name="add-a-photo" size={32} color="#C9A84C" />
+                  <Text className="text-text-secondary text-sm mt-2">
+                    {t("add.addImage")}
+                  </Text>
+                </>
+              )}
             </Pressable>
 
             <View className="bg-surface border border-border rounded-xl px-4 py-4 mb-5">

@@ -1,8 +1,9 @@
+import ItemImagePicker from "@/components/ItemImagePicker";
 import { fetchGoodsById } from "@/lib/goods";
 import useTags from "@/lib/hooks/useTags";
 import { supabase } from "@/lib/supabase";
-import { Goods } from "@/types/goods";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import { t } from "i18next";
 import React, { useEffect, useState } from "react";
@@ -24,26 +25,26 @@ export default function GoodsEditScreen() {
   const [editTitle, setEditTitle] = useState("");
   const [editValue, setEditValue] = useState("");
   const [editText, setEditText] = useState("");
-  const [SelectedItem, setSelectedItem] = useState<Goods | null>(null);
+  const [editImage, setEditImage] = useState<string | null>(null);
+  const [upDateImage, setUpDateImage] = useState(false);
+  const [newImageUrl, setImageUrl] = useState<string | null>(null);
 
-  const [isLoading, setIsLoading] = useState(true);
   const { id } = useLocalSearchParams<{ id: string }>();
   const { tags, selectedTags, setSelectedTags, toggleTag } = useTags();
 
   useEffect(() => {
     let isActive = true;
-    fetchGoodsById(id)
-      .then((data) => {
-        if (isActive) setSelectedItem(data);
+    fetchGoodsById(id).then((data) => {
+      if (isActive) {
         setEditTitle(data?.title || "");
         setEditValue(data?.price?.toString() || "0.00");
         setEditText(data?.text || "");
         setSelectedTags(data?.tags || []);
         setIsKeep(data?.status === "keep");
-      })
-      .finally(() => {
-        if (isActive) setIsLoading(false);
-      });
+        setEditImage(data?.images?.[0] || null);
+      }
+    });
+
     return () => {
       isActive = false;
     };
@@ -51,21 +52,50 @@ export default function GoodsEditScreen() {
 
   const handleUpdate = async () => {
     try {
-      const { data: goods, error: EditError } = await supabase
+      const { error: EditError } = await supabase
         .from("goods")
         .update({
           title: editTitle,
           price: parseFloat(editValue) || 0,
           text: editText,
           status: isKeep ? "keep" : "to_sell",
+          images: newImageUrl ? [newImageUrl] : editImage ? [editImage] : [],
         })
-        .eq("goods_id", id);
+        .eq("goods_id", id)
+        .select("goods_id");
+
       if (EditError) throw EditError;
+
+      const { error: tagsError } = await supabase
+        .from("goods_tags")
+        .delete()
+        .eq("goods_id", id);
+
+      if (tagsError) throw tagsError;
+
+      const tagRows = tags
+        .filter((tag) => selectedTags.includes(tag.tag_name))
+        .map((tag) => ({ goods_id: id, tag_id: tag.tag_id }));
+
+      if (tagRows.length > 0) {
+        const { error: newTagsError } = await supabase
+          .from("goods_tags")
+          .upsert(tagRows, {
+            onConflict: "goods_id,tag_id",
+          });
+
+        if (newTagsError) throw newTagsError;
+      }
+
       alert("更新しました");
       router.back();
     } catch (error) {
-      console.log("NG");
+      console.log("NG", error);
     }
+  };
+
+  const onClickUploadImage = () => {
+    setUpDateImage(!upDateImage);
   };
 
   return (
@@ -92,15 +122,27 @@ export default function GoodsEditScreen() {
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ paddingBottom: 120 }}
         >
-          <Pressable className="bg-surface border border-dashed border-border rounded-xl h-44 items-center justify-center mb-4 active:opacity-70">
-            <MaterialIcons name="add-a-photo" size={32} color="#C9A84C" />
-            <Text className="text-text-secondary text-sm mt-2">
-              {t("add.addImage")}
-            </Text>
-          </Pressable>
+          <ItemImagePicker
+            imageUrl={null}
+            onImageChange={(url: string) => {
+              setImageUrl(url);
+            }}
+            isOpen={upDateImage}
+            isClosing={() => setUpDateImage(false)}
+          />
+          <View className="mx-4 rounded-xl overflow-hidden mb-5">
+            <Image
+              source={{ uri: newImageUrl || editImage || "" }}
+              style={{ width: "100%", height: 224 }}
+              className="w-full h-56"
+              contentFit="cover"
+              transition={1000}
+            />
+          </View>
+
           <Pressable
-            onPress={() => router.back()}
-            className="flex-1 py-3 mb-8 justify-center rounded-xl border border-border  bg-surface items-center active:opacity-70 w-1/2 self-center"
+            onPress={onClickUploadImage}
+            className="flex-1 mt-3 py-3 mb-8 justify-center rounded-xl border border-border  bg-surface items-center active:opacity-70 w-1/2 self-center"
           >
             <Text className="text-gold-muted-2 font-semibold flex align-middle  ">
               写真を変更する
@@ -205,11 +247,8 @@ export default function GoodsEditScreen() {
           </Pressable>
           <Pressable
             onPress={handleUpdate}
-            // disabled={isSubmitting}
             className="flex-1 py-4 rounded-xl bg-gold items-center active:opacity-70"
           >
-            {/* <ActivityIndicator color="#0D0D0D" /> */}
-
             <Text className="text-black font-bold">更新する</Text>
           </Pressable>
         </View>
