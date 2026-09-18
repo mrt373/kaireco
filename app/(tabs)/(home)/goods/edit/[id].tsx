@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -20,6 +20,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GoodsEditScreen() {
+  const { t } = useTranslation();
   const [isKeep, setIsKeep] = useState(true);
   const [editTitle, setEditTitle] = useState("");
   const [editValue, setEditValue] = useState("");
@@ -86,7 +87,7 @@ export default function GoodsEditScreen() {
         if (newTagsError) throw newTagsError;
       }
 
-      alert("更新しました");
+      alert(t("edit.updated"));
       router.back();
     } catch (error) {
       console.log("NG", error);
@@ -112,7 +113,7 @@ export default function GoodsEditScreen() {
             <MaterialIcons name="arrow-back" size={24} color="#F5F0E8" />
           </TouchableOpacity>
           <Text className="text-text-primary text-lg font-bold ml-2">
-            商品編集
+            {t("edit.title")}
           </Text>
         </View>
 
@@ -144,7 +145,7 @@ export default function GoodsEditScreen() {
             className="flex-1 mt-3 py-3 mb-8 justify-center rounded-xl border border-border  bg-surface items-center active:opacity-70 w-1/2 self-center"
           >
             <Text className="text-gold-muted-2 font-semibold flex align-middle  ">
-              写真を変更する
+              {t("add.changePhoto")}
             </Text>
           </Pressable>
 
@@ -225,13 +226,13 @@ export default function GoodsEditScreen() {
             onPress={() => router.back()}
             className="flex-1 py-4 rounded-xl border border-border items-center active:opacity-70"
           >
-            <Text className="text-text-primary font-semibold">キャンセル</Text>
+            <Text className="text-text-primary font-semibold">{t("add.cancel")}</Text>
           </Pressable>
           <Pressable
             onPress={handleUpdate}
             className="flex-1 py-4 rounded-xl bg-gold items-center active:opacity-70"
           >
-            <Text className="text-black font-bold">更新する</Text>
+            <Text className="text-black font-bold">{t("add.updateItem")}</Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>

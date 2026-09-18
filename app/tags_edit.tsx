@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ScrollView,
   Text,
@@ -13,13 +14,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 export default function ProfileEditScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [tag, setTag] = useState("");
   const { tags, fetchTags } = useTags();
   const numberOfTags = tags.length;
 
   const handleAdd = async () => {
     await supabase.from("tags").insert({ tag_name: tag });
-    alert("タグを追加しました");
+    alert(t("tags.added"));
     fetchTags();
     setTag("");
   };
@@ -29,7 +31,7 @@ export default function ProfileEditScreen() {
     console.log("削除するid:", id);
 
     fetchTags();
-    alert("削除しました");
+    alert(t("tags.deleted"));
   };
 
   return (
@@ -43,7 +45,7 @@ export default function ProfileEditScreen() {
           <MaterialIcons name="arrow-back" size={24} color="#F5F0E8" />
         </TouchableOpacity>
         <Text className="text-text-primary text-lg font-bold ml-2">
-          タグの管理
+          {t("tags.title")}
         </Text>
       </View>
 
@@ -64,7 +66,7 @@ export default function ProfileEditScreen() {
           />
         </View> */}
         <Text className="text-gold-muted-3 text-md uppercase tracking-widest mb-2 mt-5">
-          タグの作成 CREATE NEW
+          {t("tags.createNew")}
         </Text>
         <View className="flex-row">
           <TextInput

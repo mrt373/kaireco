@@ -20,15 +20,15 @@ export default function Settings() {
   }[] = [
     {
       icon: "notifications-none",
-      label: "通知設定",
-      description: t("profile.profileEditDesc"),
+      label: t("settings.notifications"),
+      description: t("profile.notificationsDesc"),
       onPress: () => router.push("/notifications"),
     },
 
     {
       icon: "tag",
-      label: "タグ設定",
-      description: t("設定の変更"),
+      label: t("settings.tagSettings"),
+      description: t("profile.profileEditDesc"),
       onPress: () => router.push("/tags_edit"),
     },
   ];
@@ -44,7 +44,7 @@ export default function Settings() {
           <MaterialIcons name="arrow-back" size={24} color="#F5F0E8" />
         </TouchableOpacity>
         <Text className="text-text-primary text-lg font-bold ml-2">
-          各種設定
+          {t("settings.title")}
         </Text>
       </View>
 

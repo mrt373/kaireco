@@ -51,7 +51,7 @@ export default function MenuModal({ item, isOpen, isClosing }: MenuModalProps) {
 
   const handleSave = async () => {
     if (selectedTags.length === 0) {
-      alert("手放し方を選択してください");
+      alert(t("menu.archiveMethodRequired"));
       return;
     }
     try {
@@ -74,7 +74,7 @@ export default function MenuModal({ item, isOpen, isClosing }: MenuModalProps) {
   };
 
   const createTwoButtonAlert = (id: string) =>
-    Alert.alert("アイテム削除", "本当に削除しますか？", [
+    Alert.alert(t("menu.deleteConfirmTitle"), t("menu.deleteConfirmMessage"), [
       {
         text: "Cancel",
         onPress: () => console.log("Cancel Pressed"),
@@ -111,7 +111,7 @@ export default function MenuModal({ item, isOpen, isClosing }: MenuModalProps) {
       {showArchiveForm ? (
         <View className="flex-col  px-4 pt-4 pb-2  bg-background rounded-lg ">
           <Text className="text-gold text-sm uppercase tracking-widest mb-2">
-            手放し方
+            {t("menu.archiveMethod")}
           </Text>
           <View className="flex-row flex-wrap gap-2 mb-5">
             {ARCHIVE_METHODS.map((tag) => (
@@ -138,7 +138,7 @@ export default function MenuModal({ item, isOpen, isClosing }: MenuModalProps) {
           </View>
 
           <Text className="text-gold text-sm uppercase tracking-widest mb-2">
-            手放した理由
+            {t("menu.archiveReason")}
           </Text>
           <TextInput
             className="bg-surface border border-border　color-white "
@@ -159,13 +159,13 @@ export default function MenuModal({ item, isOpen, isClosing }: MenuModalProps) {
           >
             {/* <ActivityIndicator color="#0D0D0D" /> */}
 
-            <Text className="text-black font-bold">アーカイブに移動</Text>
+            <Text className="text-black font-bold">{t("menu.moveToArchive")}</Text>
           </Pressable>
           <Pressable
             onPress={isClosing}
             className="px-4 py-8 items-center rounded-xl"
           >
-            <Text className="text-text-primary ">キャンセル</Text>
+            <Text className="text-text-primary ">{t("menu.cancel")}</Text>
           </Pressable>
         </View>
       ) : (
@@ -180,7 +180,7 @@ export default function MenuModal({ item, isOpen, isClosing }: MenuModalProps) {
               color={"#C9A84C"}
               className="pr-6"
             />
-            <Text className="text-text-primary  text-lg">編集する</Text>
+            <Text className="text-text-primary  text-lg">{t("menu.edit")}</Text>
           </Pressable>
           <Pressable
             onPress={handleArchive}
@@ -192,7 +192,7 @@ export default function MenuModal({ item, isOpen, isClosing }: MenuModalProps) {
               color={"#C9A84C"}
               className="pr-6"
             />
-            <Text className="text-text-primary text-lg">アーカイブ</Text>
+            <Text className="text-text-primary text-lg">{t("menu.archive")}</Text>
           </Pressable>
           <Pressable
             onPress={() => handleDelete(item)}
@@ -204,13 +204,13 @@ export default function MenuModal({ item, isOpen, isClosing }: MenuModalProps) {
               color={"#FFB4AB"}
               className="pr-6"
             />
-            <Text className=" text-error text-lg ">削除</Text>
+            <Text className=" text-error text-lg ">{t("menu.delete")}</Text>
           </Pressable>
           <Pressable
             onPress={isClosing}
             className="px-4 py-8 items-center rounded-xl"
           >
-            <Text className="text-text-primary ">キャンセル</Text>
+            <Text className="text-text-primary ">{t("menu.cancel")}</Text>
           </Pressable>
         </View>
       )}

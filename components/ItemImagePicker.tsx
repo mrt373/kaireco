@@ -4,6 +4,7 @@ import * as Crypto from "expo-crypto";
 import * as ImagePicker from "expo-image-picker";
 import React from "react";
 import { Alert, Modal, Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   imageUrl: string | null;
@@ -18,6 +19,7 @@ export default function ItemImagePicker({
   isOpen,
   isClosing,
 }: Props) {
+  const { t } = useTranslation();
   const handleImageSelected = async (uri: string) => {
     const fileName = Crypto.randomUUID();
     const formData = new FormData();
@@ -107,14 +109,14 @@ export default function ItemImagePicker({
           onPress={pickImage}
           className="mt-5 flex-1 w-1/2 h-2/5  py-4 rounded-x bg-surface-elevated items-center active:opacity-70"
         >
-          <Text className="text-text-primary pb-5">アルバムから選択</Text>
+          <Text className="text-text-primary pb-5">{t("imagePicker.pickFromAlbum")}</Text>
           <SimpleLineIcons name="picture" size={45} color="#FFFFFF" />
         </Pressable>
         <Pressable
           onPress={takePhoto}
           className="mt-5 py-4 flex-1 w-1/2 h-2/5   rounded-xl   bg-surface-elevated items-center active:opacity-70"
         >
-          <Text className="text-text-primary pb-5">写真を撮る</Text>
+          <Text className="text-text-primary pb-5">{t("imagePicker.takePhoto")}</Text>
           <Ionicons name="camera-outline" size={50} color="#FFFFFF" />
         </Pressable>
       </View>
