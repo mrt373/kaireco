@@ -14,20 +14,20 @@ export default function ArchiveScreen() {
     "all",
   );
   const [goods, setGoods] = useState<Goods[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const { session } = useAuth();
 
   useFocusEffect(
     useCallback(() => {
       if (!session?.user) return;
       let isActive = true;
-      setIsLoading(true);
+      // setIsLoading(true);
       fetchArchivedGoods(session.user.id)
         .then((data) => {
           if (isActive) setGoods(data);
         })
         .finally(() => {
-          if (isActive) setIsLoading(false);
+          // if (isActive) setIsLoading(false);
         });
       return () => {
         isActive = false;

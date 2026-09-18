@@ -19,8 +19,8 @@ export const ARCHIVE_METHODS = [
 ] as const;
 
 export default function MenuModal({ item, isOpen, isClosing }: MenuModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDelete, setIsdelete] = useState(false);
+  // const [isSubmitting, setIsSubmitting] = useState(false);
+  // const [isDelete, setIsdelete] = useState(false);
   const [showArchiveForm, setShowArchiveForm] = useState(false);
   const [editText, setEditText] = useState("");
   const [selectedTags, setSelectedTags] = useState<
@@ -36,7 +36,7 @@ export default function MenuModal({ item, isOpen, isClosing }: MenuModalProps) {
   };
 
   const handleEdit = async () => {
-    setIsSubmitting(true);
+    // setIsSubmitting(true);
     try {
       router.push(`/goods/edit/${item}`);
       isClosing();

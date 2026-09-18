@@ -1,6 +1,7 @@
 import { ArchiveMethod, Goods } from "@/types/goods";
+import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Image, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 
 type Props = { item: Goods };
 
@@ -30,7 +31,10 @@ export default function ArchiveCard({ item }: Props) {
   };
 
   return (
-    <View className="bg-surface border border-border rounded-xl mb-4 overflow-hidden">
+    <Pressable
+      className="bg-surface border border-border rounded-xl mb-4 overflow-hidden"
+      onPress={() => router.push(`/goods/${item.goods_id}`)}
+    >
       <Image
         source={{ uri: item.images[0] }}
         className="w-full h-40"
@@ -67,6 +71,6 @@ export default function ArchiveCard({ item }: Props) {
           </Text>
         )}
       </View>
-    </View>
+    </Pressable>
   );
 }
