@@ -33,7 +33,7 @@ export default function ArchiveCard({ item }: Props) {
   return (
     <Pressable
       className="bg-surface border border-border rounded-xl mb-4 overflow-hidden"
-      onPress={() => router.push(`/goods/${item.goods_id}`)}
+      onPress={() => router.push(`/archive/goods/${item.goods_id}`)}
     >
       <Image
         source={{ uri: item.images[0] }}
