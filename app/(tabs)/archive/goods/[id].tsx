@@ -1,5 +1,6 @@
 import MenuModal from "@/components/MenuModal";
 import { fetchGoodsById } from "@/lib/goods";
+import { supabase } from "@/lib/supabase";
 import { Goods } from "@/types/goods";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
@@ -7,6 +8,7 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -56,7 +58,6 @@ export default function GoodsDetailScreen() {
     );
   }
   const isArchiveFormOpen = item.archived_at != null;
-  const isToSell = item.status === "to_sell";
 
   const handleMoreOptions = () => {
     setIsOpen(!isOpen);
@@ -68,8 +69,43 @@ export default function GoodsDetailScreen() {
     }
   };
 
-  const backToGoodsList = () => {
-    alert("本当に持ち物一覧に戻しますか？");
+  const backToGoodsList = async () => {
+    try {
+      const { error: EditError } = await supabase
+        .from("goods")
+        .update({
+          archived_at: null,
+          status: "keep",
+        })
+        .eq("goods_id", id)
+        .select("goods_id");
+
+      if (EditError) throw EditError;
+      router.replace("/archive");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDelete = () => {
+    Alert.alert(t("menu.deleteConfirmTitle"), t("menu.deleteConfirmMessage"), [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel",
+      },
+      {
+        text: "OK",
+        onPress: async () => {
+          const { error } = await supabase
+            .from("goods")
+            .delete()
+            .eq("goods_id", id);
+          if (error) throw error;
+          router.back();
+        },
+      },
+    ]);
   };
 
   return (
@@ -112,28 +148,13 @@ export default function GoodsDetailScreen() {
             <Text className="text-text-primary text-2xl font-bold flex-1 mr-3">
               {item.title}
             </Text>
-            <View
-              className={`px-3 py-1 rounded mt-1 ${
-                isToSell
-                  ? "bg-surface-elevated border border-border"
-                  : "bg-gold-muted"
-              }`}
-            >
-              <Text
-                className={`text-xs font-bold tracking-widest ${
-                  isToSell ? "text-text-secondary" : "text-gold"
-                }`}
-              >
-                {isToSell ? t("goodsCard.toSell") : t("goodsCard.keep")}
-              </Text>
-            </View>
           </View>
 
-          <View className="flex-row flex-wrap gap-2 mb-4">
+          <View className="flex-row flex-wrap gap-2 mb-4 py-2">
             {item.tags.map((tag) => (
               <View
                 key={tag}
-                className="bg-surface border border-border px-3 py-1 rounded-full"
+                className="bg-surface border border-border px-3 rounded-full"
               >
                 <Text className="text-text-secondary text-xs">{tag}</Text>
               </View>
@@ -176,7 +197,7 @@ export default function GoodsDetailScreen() {
                 </Text>
               </Pressable>
               <TouchableOpacity
-                // onPress={}
+                onPress={handleDelete}
                 className=" bg-surface   rounded-xl py-4 items-center mb-3 active:opacity-80 border border-error"
               >
                 <Text className="text-error ">削除する</Text>

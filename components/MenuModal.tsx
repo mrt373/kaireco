@@ -61,6 +61,7 @@ export default function MenuModal({ item, isOpen, isClosing }: MenuModalProps) {
           archived_at: new Date().toISOString(),
           archive_method: selectedTags[0],
           archive_reason: editText || null,
+          status: "to_sell",
         })
         .eq("goods_id", item);
       if (error) throw error;
@@ -159,7 +160,9 @@ export default function MenuModal({ item, isOpen, isClosing }: MenuModalProps) {
           >
             {/* <ActivityIndicator color="#0D0D0D" /> */}
 
-            <Text className="text-black font-bold">{t("menu.moveToArchive")}</Text>
+            <Text className="text-black font-bold">
+              {t("menu.moveToArchive")}
+            </Text>
           </Pressable>
           <Pressable
             onPress={isClosing}
@@ -192,7 +195,9 @@ export default function MenuModal({ item, isOpen, isClosing }: MenuModalProps) {
               color={"#C9A84C"}
               className="pr-6"
             />
-            <Text className="text-text-primary text-lg">{t("menu.archive")}</Text>
+            <Text className="text-text-primary text-lg">
+              {t("menu.archive")}
+            </Text>
           </Pressable>
           <Pressable
             onPress={() => handleDelete(item)}
