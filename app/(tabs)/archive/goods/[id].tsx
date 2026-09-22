@@ -70,21 +70,36 @@ export default function GoodsDetailScreen() {
   };
 
   const backToGoodsList = async () => {
-    try {
-      const { error: EditError } = await supabase
-        .from("goods")
-        .update({
-          archived_at: null,
-          status: "keep",
-        })
-        .eq("goods_id", id)
-        .select("goods_id");
-
-      if (EditError) throw EditError;
-      router.replace("/archive");
-    } catch (error) {
-      console.error(error);
-    }
+    Alert.alert(
+      "本当に持ち物一覧に戻しますか",
+      "この操作を行うと、アイテムはアーカイブから手持ち一覧に戻ります。",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            try {
+              const { error: EditError } = await supabase
+                .from("goods")
+                .update({
+                  archived_at: null,
+                  status: "keep",
+                })
+                .eq("goods_id", id)
+                .select("goods_id");
+              if (EditError) throw EditError;
+              router.replace("/archive");
+            } catch (error) {
+              console.error(error);
+            }
+          },
+        },
+      ],
+    );
   };
 
   const handleDelete = () => {
@@ -109,8 +124,8 @@ export default function GoodsDetailScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <View className="flex-row justify-between items-center px-4 pt-4 pb-2">
+    <SafeAreaView className="flex-1   bg-background">
+      <View className="flex-row px-4 pt-4 pb-2">
         <TouchableOpacity
           onPress={() => router.back()}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
@@ -118,20 +133,12 @@ export default function GoodsDetailScreen() {
         >
           <MaterialIcons name="arrow-back" size={24} color="#F5F0E8" />
         </TouchableOpacity>
-        <Text className="text-text-primary text-lg font-bold ml-2">
+        <Text
+          className="absolute left-0 right-0 pt-6 text-center text-text-primary text-lg font-bold ml-2"
+          pointerEvents="none"
+        >
           {"アイテム"}
         </Text>
-        <TouchableOpacity
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          className="p-2"
-        >
-          <MaterialIcons
-            name="more-vert"
-            size={24}
-            color="#F5F0E8"
-            onPress={handleMoreOptions}
-          />
-        </TouchableOpacity>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -179,11 +186,19 @@ export default function GoodsDetailScreen() {
             </Text>
           </View>
 
-          <View className="bg-surface border border-border rounded-xl p-4 mb-8">
+          <View className="bg-surface border border-border rounded-xl p-4 mb-4">
             <Text className="text-text-secondary text-xs uppercase tracking-widest mb-1">
               {t("detail.acquired")}
             </Text>
             <Text className="text-text-primary text-sm">{item.created_at}</Text>
+          </View>
+          <View className="bg-surface border border-border rounded-xl p-4 mb-8">
+            <Text className="text-error text-xs uppercase tracking-widest mb-1">
+              手放した理由
+            </Text>
+            <Text className="text-text-primary text-sm leading-relaxed">
+              {item.archive_reason}
+            </Text>
           </View>
 
           {isArchiveFormOpen && (
