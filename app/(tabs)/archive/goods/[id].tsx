@@ -1,6 +1,5 @@
-import MenuModal from "@/components/MenuModal";
+import ArchiveMenuModal from "@/components/ArchiveMenuModal";
 import { fetchGoodsById } from "@/lib/goods";
-import { supabase } from "@/lib/supabase";
 import { Goods } from "@/types/goods";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
@@ -8,9 +7,7 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   Image,
-  Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -57,7 +54,6 @@ export default function GoodsDetailScreen() {
       </View>
     );
   }
-  const isArchiveFormOpen = item.archived_at != null;
 
   const handleMoreOptions = () => {
     setIsOpen(!isOpen);
@@ -69,63 +65,9 @@ export default function GoodsDetailScreen() {
     }
   };
 
-  const backToGoodsList = async () => {
-    Alert.alert(
-      "本当に持ち物一覧に戻しますか",
-      "この操作を行うと、アイテムはアーカイブから手持ち一覧に戻ります。",
-      [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        {
-          text: "OK",
-          onPress: async () => {
-            try {
-              const { error: EditError } = await supabase
-                .from("goods")
-                .update({
-                  archived_at: null,
-                  status: "keep",
-                })
-                .eq("goods_id", id)
-                .select("goods_id");
-              if (EditError) throw EditError;
-              router.replace("/archive");
-            } catch (error) {
-              console.error(error);
-            }
-          },
-        },
-      ],
-    );
-  };
-
-  const handleDelete = () => {
-    Alert.alert(t("menu.deleteConfirmTitle"), t("menu.deleteConfirmMessage"), [
-      {
-        text: "Cancel",
-        onPress: () => console.log("Cancel Pressed"),
-        style: "cancel",
-      },
-      {
-        text: "OK",
-        onPress: async () => {
-          const { error } = await supabase
-            .from("goods")
-            .delete()
-            .eq("goods_id", id);
-          if (error) throw error;
-          router.back();
-        },
-      },
-    ]);
-  };
-
   return (
-    <SafeAreaView className="flex-1   bg-background">
-      <View className="flex-row px-4 pt-4 pb-2">
+    <SafeAreaView className="flex-1 bg-background">
+      <View className="flex-row justify-between items-center px-4 pt-4 pb-2">
         <TouchableOpacity
           onPress={() => router.back()}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
@@ -133,11 +75,16 @@ export default function GoodsDetailScreen() {
         >
           <MaterialIcons name="arrow-back" size={24} color="#F5F0E8" />
         </TouchableOpacity>
-        <Text
-          className="absolute left-0 right-0 pt-6 text-center text-text-primary text-lg font-bold ml-2"
-          pointerEvents="none"
-        >
+        <Text className="text-text-primary text-lg font-bold ml-2">
           {"アイテム"}
+        </Text>
+        <Text className="p-2">
+          <MaterialIcons
+            name="more-vert"
+            size={24}
+            color="#F5F0E8"
+            onPress={handleMoreOptions}
+          />
         </Text>
       </View>
 
@@ -200,29 +147,10 @@ export default function GoodsDetailScreen() {
               {item.archive_reason}
             </Text>
           </View>
-
-          {isArchiveFormOpen && (
-            <>
-              <Pressable
-                onPress={backToGoodsList}
-                className="bg-gold rounded-xl py-4 items-center mb-3 active:opacity-80"
-              >
-                <Text className="text-background text-sm font-bold text-center">
-                  持ち物一覧に戻す
-                </Text>
-              </Pressable>
-              <TouchableOpacity
-                onPress={handleDelete}
-                className=" bg-surface   rounded-xl py-4 items-center mb-3 active:opacity-80 border border-error"
-              >
-                <Text className="text-error ">削除する</Text>
-              </TouchableOpacity>
-            </>
-          )}
         </View>
       </ScrollView>
       {isOpen && (
-        <MenuModal
+        <ArchiveMenuModal
           item={item.goods_id}
           isOpen={isOpen}
           isClosing={() => setIsOpen(!isOpen)}
