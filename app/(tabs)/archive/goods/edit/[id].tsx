@@ -1,4 +1,3 @@
-import ItemImagePicker from "@/components/ItemImagePicker";
 import { fetchGoodsById } from "@/lib/goods";
 import useTags from "@/lib/hooks/useTags";
 import { supabase } from "@/lib/supabase";
@@ -26,6 +25,7 @@ export default function GoodsEditScreen() {
   const [editValue, setEditValue] = useState("");
   const [editText, setEditText] = useState("");
   const [editImage, setEditImage] = useState<string | null>(null);
+  const [archiveReason, setArchiveReason] = useState("");
   const [upDateImage, setUpDateImage] = useState(false);
   const [newImageUrl, setImageUrl] = useState<string | null>(null);
 
@@ -42,6 +42,7 @@ export default function GoodsEditScreen() {
         setSelectedTags(data?.tags || []);
         setIsKeep(data?.status === "keep");
         setEditImage(data?.images?.[0] || null);
+        setArchiveReason(data?.archive_reason || "");
       }
     });
 
@@ -122,14 +123,6 @@ export default function GoodsEditScreen() {
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ paddingBottom: 120 }}
         >
-          <ItemImagePicker
-            imageUrl={null}
-            onImageChange={(url: string) => {
-              setImageUrl(url);
-            }}
-            isOpen={upDateImage}
-            isClosing={() => setUpDateImage(false)}
-          />
           <View className="mx-4 rounded-xl overflow-hidden mb-5">
             <Image
               source={{ uri: newImageUrl || editImage || "" }}
@@ -140,42 +133,17 @@ export default function GoodsEditScreen() {
             />
           </View>
 
-          <Pressable
-            onPress={onClickUploadImage}
-            className="flex-1 mt-3 py-3 mb-8 justify-center rounded-xl border border-border  bg-surface items-center active:opacity-70 w-1/2 self-center"
-          >
-            <Text className="text-gold-muted-2 font-semibold flex align-middle  ">
-              {t("add.changePhoto")}
-            </Text>
-          </Pressable>
-
           <Text className="text-gold text-xs uppercase tracking-widest mb-2">
             {t("add.itemTitle")}
           </Text>
+          <Text className="text-text-primary text-md">{editTitle}</Text>
 
-          <View className="bg-surface border border-border rounded-xl px-4 py-3 mb-5">
-            <TextInput
-              className="text-text-primary text-sm"
-              placeholder={editTitle || t("add.itemPlaceholder")}
-              placeholderTextColor="#555555"
-              value={editTitle}
-              onChangeText={setEditTitle}
-            />
-          </View>
-
-          <Text className="text-gold text-xs uppercase tracking-widest mb-2">
+          <Text className="text-gold text-xs uppercase tracking-widest mb-2 pt-4">
             {t("add.acquisitionValue")}
           </Text>
-          <View className="bg-surface border border-border rounded-xl px-4 py-3 mb-5 flex-row items-center">
+          <View className="rounded-xl  py-2 mb-5 flex-row items-center">
             <Text className="text-text-secondary mr-2">$</Text>
-            <TextInput
-              className="text-text-primary text-sm flex-1"
-              placeholder="0.00"
-              placeholderTextColor="#555555"
-              keyboardType="decimal-pad"
-              value={editValue}
-              onChangeText={setEditValue}
-            />
+            <Text className="text-text-primary text-md">{editValue}</Text>
           </View>
           <Text className="text-gold text-xs uppercase tracking-widest mb-2">
             {t("add.category")}
@@ -206,6 +174,12 @@ export default function GoodsEditScreen() {
           <Text className="text-gold text-xs uppercase tracking-widest mb-2">
             {t("add.intentReflection")}
           </Text>
+          <View className=" rounded-xl  py-3">
+            <Text className="text-text-primary text-md">{editText}</Text>
+          </View>
+          <Text className="text-gold text-xs uppercase tracking-widest mb-2">
+            {t("add.archiveReason")}
+          </Text>
           <View className="bg-surface border border-border rounded-xl px-4 py-3">
             <TextInput
               className="text-text-primary text-sm"
@@ -214,8 +188,8 @@ export default function GoodsEditScreen() {
               numberOfLines={4}
               scrollEnabled={false}
               textAlignVertical="top"
-              value={editText}
-              onChangeText={setEditText}
+              value={archiveReason}
+              onChangeText={setArchiveReason}
               style={{ minHeight: 100 }}
             />
           </View>
