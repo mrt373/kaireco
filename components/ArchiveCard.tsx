@@ -5,14 +5,14 @@ import { Image, Pressable, Text, View } from "react-native";
 
 type Props = { item: Goods };
 
-const METHOD_STYLE: Record<ArchiveMethod, string> = {
+export const METHOD_STYLE: Record<ArchiveMethod, string> = {
   donated: "bg-blue-900 border-blue-700",
   sold: "bg-green-900 border-green-700",
   recycled: "bg-stone-700 border-stone-500",
   other: "bg-surface-elevated border-border",
 };
 
-const METHOD_TEXT_STYLE: Record<ArchiveMethod, string> = {
+export const METHOD_TEXT_STYLE: Record<ArchiveMethod, string> = {
   donated: "text-blue-300",
   sold: "text-green-300",
   recycled: "text-stone-300",

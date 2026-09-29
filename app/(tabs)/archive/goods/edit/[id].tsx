@@ -1,3 +1,4 @@
+import { ARCHIVE_METHODS } from "@/components/ArchiveMenuModal";
 import { fetchGoodsById } from "@/lib/goods";
 import useTags from "@/lib/hooks/useTags";
 import { supabase } from "@/lib/supabase";
@@ -149,24 +150,24 @@ export default function GoodsEditScreen() {
             {t("add.category")}
           </Text>
           <View className="flex-row flex-wrap gap-2 mb-5">
-            {tags.map((tag) => (
+            {ARCHIVE_METHODS.map((method) => (
               <Pressable
-                key={tag.tag_id}
-                onPress={() => toggleTag(tag.tag_name)}
+                key={method}
+                onPress={() => toggleTag(method)}
                 className={`px-4 py-2 rounded-full border ${
-                  selectedTags.includes(tag.tag_name)
+                  selectedTags.includes(method)
                     ? "bg-gold border-gold"
                     : "bg-surface border-border"
                 }`}
               >
                 <Text
                   className={`text-sm ${
-                    selectedTags.includes(tag.tag_name)
+                    selectedTags.includes(method)
                       ? "text-black font-bold"
                       : "text-text-secondary"
                   }`}
                 >
-                  {tag.tag_name}
+                  {method}
                 </Text>
               </Pressable>
             ))}

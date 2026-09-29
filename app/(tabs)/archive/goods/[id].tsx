@@ -1,6 +1,7 @@
+import { METHOD_STYLE, METHOD_TEXT_STYLE } from "@/components/ArchiveCard";
 import ArchiveMenuModal from "@/components/ArchiveMenuModal";
 import { fetchGoodsById } from "@/lib/goods";
-import { Goods } from "@/types/goods";
+import { ArchiveMethod, Goods } from "@/types/goods";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
@@ -65,6 +66,15 @@ export default function GoodsDetailScreen() {
     }
   };
 
+  const method = item.archive_method ?? "other";
+
+  const methodLabel: Record<ArchiveMethod, string> = {
+    donated: t("archive.donated"),
+    sold: t("archive.sold"),
+    recycled: t("archive.recycled"),
+    other: t("archive.other"),
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className="flex-row justify-between items-center px-4 pt-4 pb-2">
@@ -104,15 +114,12 @@ export default function GoodsDetailScreen() {
             </Text>
           </View>
 
-          <View className="flex-row flex-wrap gap-2 mb-4 py-2">
-            {item.tags.map((tag) => (
-              <View
-                key={tag}
-                className="bg-surface border border-border px-3 rounded-full"
-              >
-                <Text className="text-text-secondary text-xs">{tag}</Text>
-              </View>
-            ))}
+          <View className={`px-3 py-1 rounded border ${METHOD_STYLE[method]}`}>
+            <Text
+              className={`text-xs font-bold tracking-widest ${METHOD_TEXT_STYLE[method]}`}
+            >
+              {item.archive_method}
+            </Text>
           </View>
 
           <View className="bg-surface border border-border rounded-xl p-4 mb-4">
