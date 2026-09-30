@@ -1,5 +1,6 @@
 import { ArchiveMethod, Goods } from "@/types/goods";
 import { router } from "expo-router";
+import { t } from "i18next";
 import { useTranslation } from "react-i18next";
 import { Image, Pressable, Text, View } from "react-native";
 
@@ -19,16 +20,16 @@ export const METHOD_TEXT_STYLE: Record<ArchiveMethod, string> = {
   other: "text-text-secondary",
 };
 
+export const methodLabel: Record<ArchiveMethod, string> = {
+  donated: t("archive.donated"),
+  sold: t("archive.sold"),
+  recycled: t("archive.recycled"),
+  other: t("archive.other"),
+};
+
 export default function ArchiveCard({ item }: Props) {
   const { t } = useTranslation();
   const method = item.archive_method ?? "other";
-
-  const methodLabel: Record<ArchiveMethod, string> = {
-    donated: t("archive.donated"),
-    sold: t("archive.sold"),
-    recycled: t("archive.recycled"),
-    other: t("archive.other"),
-  };
 
   return (
     <Pressable

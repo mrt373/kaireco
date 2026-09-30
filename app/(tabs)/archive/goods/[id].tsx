@@ -1,4 +1,8 @@
-import { METHOD_STYLE, METHOD_TEXT_STYLE } from "@/components/ArchiveCard";
+import {
+  METHOD_STYLE,
+  METHOD_TEXT_STYLE,
+  methodLabel,
+} from "@/components/ArchiveCard";
 import ArchiveMenuModal from "@/components/ArchiveMenuModal";
 import { fetchGoodsById } from "@/lib/goods";
 import { Goods } from "@/types/goods";
@@ -108,12 +112,12 @@ export default function GoodsDetailScreen() {
           </View>
 
           <View
-            className={`px-3 py-1 rounded border w-1/5 mb-4 ${METHOD_STYLE[method]}`}
+            className={`px-3 py-1 rounded border text-center ${METHOD_STYLE[method]}`}
           >
             <Text
               className={`text-xs font-bold tracking-widest ${METHOD_TEXT_STYLE[method]}`}
             >
-              {item.archive_method}
+              {methodLabel[method] ?? method}
             </Text>
           </View>
 
