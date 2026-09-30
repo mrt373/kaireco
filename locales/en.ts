@@ -20,6 +20,10 @@ export default {
     acquisitionValue: "Acquisition Value",
     note: "Note",
     acquired: "Acquired",
+    item: "Item",
+    archiveReason: "Reason for letting go",
+    backToCollection: "Return to Collection",
+    delete: "Delete",
   },
   archive: {
     title: "Archive",
@@ -86,6 +90,9 @@ export default {
     archiveMethod: "How to let go",
     archiveReason: "Reason for letting go",
     cancel: "Cancel",
+    backToCollection: "Return to Collection",
+    backToCollectionTitle: "Return to collection?",
+    backToCollectionMessage: "This item will be moved from archive back to your collection.",
   },
   profile: {
     items: "Items",

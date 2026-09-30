@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { Alert, Modal, Pressable, Text, View } from "react-native";
 
@@ -23,8 +23,7 @@ export default function ArchiveMenuModal({
   isOpen,
   isClosing,
 }: ArchiveMenuModalProps) {
-  // const [isSubmitting, setIsSubmitting] = useState(false);
-  // const [isDelete, setIsdelete] = useState(false);
+  const { t } = useTranslation();
 
   const handleEdit = async () => {
     // setIsSubmitting(true);
@@ -38,8 +37,8 @@ export default function ArchiveMenuModal({
 
   const backToGoodsList = async (id: string) => {
     Alert.alert(
-      "本当に持ち物一覧に戻しますか",
-      "この操作を行うと、アイテムはアーカイブから手持ち一覧に戻ります。",
+      t("menu.backToCollectionTitle"),
+      t("menu.backToCollectionMessage"),
       [
         {
           text: "Cancel",
@@ -128,7 +127,7 @@ export default function ArchiveMenuModal({
             color={"#C9A84C"}
             className="pr-6"
           />
-          <Text className="text-text-primary text-lg">手持ち一覧に戻す</Text>
+          <Text className="text-text-primary text-lg">{t("menu.backToCollection")}</Text>
         </Pressable>
         <Pressable
           onPress={() => handleDelete(item)}

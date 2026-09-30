@@ -20,6 +20,10 @@ export default {
     acquisitionValue: "購入価格",
     note: "メモ",
     acquired: "購入日",
+    item: "アイテム",
+    archiveReason: "手放した理由",
+    backToCollection: "持ち物一覧に戻す",
+    delete: "削除する",
   },
   archive: {
     title: "アーカイブ",
@@ -86,6 +90,9 @@ export default {
     archiveMethod: "手放し方",
     archiveReason: "手放した理由",
     cancel: "キャンセル",
+    backToCollection: "手持ち一覧に戻す",
+    backToCollectionTitle: "本当に持ち物一覧に戻しますか",
+    backToCollectionMessage: "この操作を行うと、アイテムはアーカイブから手持ち一覧に戻ります。",
   },
   profile: {
     items: "所持品",

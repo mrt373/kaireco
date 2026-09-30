@@ -83,7 +83,7 @@ export default function GoodsDetailScreen() {
           <MaterialIcons name="arrow-back" size={24} color="#F5F0E8" />
         </TouchableOpacity>
         <Text className="text-text-primary text-lg font-bold ml-2">
-          {"アイテム"}
+          {t("detail.item")}
         </Text>
         <TouchableOpacity
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
@@ -172,14 +172,14 @@ export default function GoodsDetailScreen() {
                 className="bg-gold rounded-xl py-4 items-center mb-3 active:opacity-80"
               >
                 <Text className="text-background text-sm font-bold text-center">
-                  持ち物一覧に戻す
+                  {t("detail.backToCollection")}
                 </Text>
               </Pressable>
               <TouchableOpacity
                 // onPress={}
                 className=" bg-surface   rounded-xl py-4 items-center mb-3 active:opacity-80 border border-error"
               >
-                <Text className="text-error ">削除する</Text>
+                <Text className="text-error ">{t("detail.delete")}</Text>
               </TouchableOpacity>
             </>
           )}

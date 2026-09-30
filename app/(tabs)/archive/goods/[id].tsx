@@ -79,7 +79,7 @@ export default function GoodsDetailScreen() {
           <MaterialIcons name="arrow-back" size={24} color="#F5F0E8" />
         </TouchableOpacity>
         <Text className="text-text-primary text-lg font-bold ml-2">
-          {"アイテム"}
+          {t("detail.item")}
         </Text>
         <Text className="p-2">
           <MaterialIcons
@@ -143,7 +143,7 @@ export default function GoodsDetailScreen() {
           </View>
           <View className="bg-surface border border-border rounded-xl p-4 mb-8">
             <Text className="text-error text-xs uppercase tracking-widest mb-1">
-              手放した理由
+              {t("detail.archiveReason")}
             </Text>
             <Text className="text-text-primary text-sm leading-relaxed">
               {item.archive_reason}
