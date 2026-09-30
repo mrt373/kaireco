@@ -21,17 +21,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GoodsEditScreen() {
   const { t } = useTranslation();
-  const [isKeep, setIsKeep] = useState(true);
   const [editTitle, setEditTitle] = useState("");
   const [editValue, setEditValue] = useState("");
   const [editText, setEditText] = useState("");
   const [editImage, setEditImage] = useState<string | null>(null);
   const [archiveReason, setArchiveReason] = useState("");
-  const [upDateImage, setUpDateImage] = useState(false);
-  const [newImageUrl, setImageUrl] = useState<string | null>(null);
+  const [currentMethod, setCurrentMethod] = useState("");
 
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { tags, selectedTags, setSelectedTags, toggleTag } = useTags();
+  const { tags, selectedTags, setSelectedTags } = useTags();
 
   useEffect(() => {
     let isActive = true;
@@ -41,9 +39,9 @@ export default function GoodsEditScreen() {
         setEditValue(data?.price?.toString() || "0.00");
         setEditText(data?.text || "");
         setSelectedTags(data?.tags || []);
-        setIsKeep(data?.status === "keep");
         setEditImage(data?.images?.[0] || null);
         setArchiveReason(data?.archive_reason || "");
+        setCurrentMethod(data?.archive_method || "");
       }
     });
 
@@ -57,11 +55,8 @@ export default function GoodsEditScreen() {
       const { error: EditError } = await supabase
         .from("goods")
         .update({
-          title: editTitle,
-          price: parseFloat(editValue) || 0,
-          text: editText,
-          status: isKeep ? "keep" : "to_sell",
-          images: newImageUrl ? [newImageUrl] : editImage ? [editImage] : [],
+          archive_method: currentMethod || null,
+          archive_reason: archiveReason || null,
         })
         .eq("goods_id", id)
         .select("goods_id");
@@ -96,9 +91,9 @@ export default function GoodsEditScreen() {
     }
   };
 
-  const onClickUploadImage = () => {
-    setUpDateImage(!upDateImage);
-  };
+  // const onClickUploadImage = () => {
+  //   setUpDateImage(!upDateImage);
+  // };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -126,7 +121,7 @@ export default function GoodsEditScreen() {
         >
           <View className="mx-4 rounded-xl overflow-hidden mb-5">
             <Image
-              source={{ uri: newImageUrl || editImage || "" }}
+              source={{ uri: editImage || "" }}
               style={{ width: "100%", height: 224 }}
               className="w-full h-56"
               contentFit="cover"
@@ -153,16 +148,16 @@ export default function GoodsEditScreen() {
             {ARCHIVE_METHODS.map((method) => (
               <Pressable
                 key={method}
-                onPress={() => toggleTag(method)}
-                className={`px-4 py-2 rounded-full border ${
-                  selectedTags.includes(method)
+                onPress={() => setCurrentMethod(method)}
+                className={`px-4 py-2 rounded-full border  ${
+                  currentMethod === method
                     ? "bg-gold border-gold"
                     : "bg-surface border-border"
                 }`}
               >
                 <Text
                   className={`text-sm ${
-                    selectedTags.includes(method)
+                    currentMethod === method
                       ? "text-black font-bold"
                       : "text-text-secondary"
                   }`}
