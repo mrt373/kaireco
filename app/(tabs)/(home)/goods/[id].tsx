@@ -112,21 +112,6 @@ export default function GoodsDetailScreen() {
             <Text className="text-text-primary text-2xl font-bold flex-1 mr-3">
               {item.title}
             </Text>
-            <View
-              className={`px-3 py-1 rounded mt-1 ${
-                isToSell
-                  ? "bg-surface-elevated border border-border"
-                  : "bg-gold-muted"
-              }`}
-            >
-              <Text
-                className={`text-xs font-bold tracking-widest ${
-                  isToSell ? "text-text-secondary" : "text-gold"
-                }`}
-              >
-                {isToSell ? t("goodsCard.toSell") : t("goodsCard.keep")}
-              </Text>
-            </View>
           </View>
 
           <View className="flex-row flex-wrap gap-2 mb-4">

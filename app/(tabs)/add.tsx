@@ -15,7 +15,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  Switch,
   Text,
   TextInput,
   View,
@@ -143,25 +142,6 @@ export default function AddScreen() {
                 </>
               )}
             </Pressable>
-
-            <View className="bg-surface border border-border rounded-xl px-4 py-4 mb-5">
-              <View className="flex-row justify-between items-center">
-                <View>
-                  <Text className="text-text-primary text-sm font-semibold">
-                    {t("add.curatedStatus")}
-                  </Text>
-                  <Text className="text-text-muted text-xs mt-0.5">
-                    {isKeep ? t("add.statusKeep") : t("add.statusSell")}
-                  </Text>
-                </View>
-                <Switch
-                  value={isKeep}
-                  onValueChange={setIsKeep}
-                  trackColor={{ false: "#2A2A2A", true: "#8A6E2F" }}
-                  thumbColor={isKeep ? "#C9A84C" : "#555555"}
-                />
-              </View>
-            </View>
 
             <Text className="text-gold text-xs uppercase tracking-widest mb-2">
               {t("add.itemDesignation")}

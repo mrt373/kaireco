@@ -118,21 +118,6 @@ export default function HomeScreen() {
         <Text className="text-text-primary text-3xl font-bold mb-2">
           ${totalValue.toLocaleString("en-US", { minimumFractionDigits: 2 })}
         </Text>
-        <View className="flex-row items-center gap-2">
-          <Text className="text-text-secondary text-sm">
-            {t("home.keep")}{" "}
-            <Text className="text-gold font-semibold">
-              {goods.filter((g) => g.status === "keep").length}
-            </Text>
-          </Text>
-          <Text className="text-text-muted">•</Text>
-          <Text className="text-text-secondary text-sm">
-            {t("home.toSell")}
-            <Text className="text-gold font-semibold">
-              {goods.filter((g) => g.status === "to_sell").length}
-            </Text>
-          </Text>
-        </View>
       </View>
 
       <FlatList
