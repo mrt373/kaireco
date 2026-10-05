@@ -21,11 +21,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+const currencies = ["USD", "JPY"];
+
 export default function AddScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session } = useAuth();
-  const [isKeep, setIsKeep] = useState(true);
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [note, setNote] = useState("");
@@ -33,14 +34,15 @@ export default function AddScreen() {
   const { tags, selectedTags, resetSelectedTags, toggleTag } = useTags();
   const [upLoadImage, setUploadImage] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [currency, setCurrency] = useState("USD");
 
   const resetForm = () => {
-    setIsKeep(true);
     setTitle("");
     setPrice("");
     setNote("");
     setImageUrl(null);
     resetSelectedTags();
+    setCurrency("USD");
   };
 
   const onClickUploadImage = () => {
@@ -64,8 +66,8 @@ export default function AddScreen() {
           title: title.trim(),
           text: note.trim() || null,
           price: parseFloat(price) || 0,
-          status: isKeep ? "keep" : "to_sell",
           images: imageUrl ? [imageUrl] : [],
+          currency,
         })
         .select("goods_id")
         .single();
@@ -106,7 +108,7 @@ export default function AddScreen() {
       <SafeAreaView className="flex-1 bg-background">
         <View className="items-center px-4 pt-4 pb-2 ">
           <Text className="text-text-primary text-lg font-bold ml-2">
-            {"追加"}
+            {t("add.title")}
           </Text>
         </View>
 
@@ -155,15 +157,42 @@ export default function AddScreen() {
                 onChangeText={setTitle}
               />
             </View>
-
+            <Text className="text-gold text-xs uppercase tracking-widest mb-2">
+              {t("add.currency")}
+            </Text>
+            <View className="flex-row flex-wrap gap-2 mb-5">
+              {currencies.map((curr) => (
+                <Pressable
+                  key={curr}
+                  onPress={() => setCurrency(curr)}
+                  className={`px-4 py-2 rounded-full border ${
+                    currency === curr
+                      ? "bg-gold border-gold"
+                      : "bg-surface border-border"
+                  }`}
+                >
+                  <Text
+                    className={`text-sm ${
+                      currency === curr
+                        ? "text-black font-bold"
+                        : "text-text-secondary"
+                    }`}
+                  >
+                    {curr}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
             <Text className="text-gold text-xs uppercase tracking-widest mb-2">
               {t("add.acquisitionValue")}
             </Text>
             <View className="bg-surface border border-border rounded-xl px-4 py-3 mb-5 flex-row items-center">
-              <Text className="text-text-secondary mr-2">$</Text>
+              <Text className="text-text-secondary mr-2">
+                {currency === "USD" ? "$" : "¥"}
+              </Text>
               <TextInput
                 className="text-text-primary text-sm flex-1"
-                placeholder="0.00"
+                placeholder={currency === "USD" ? "0.00" : "0"}
                 placeholderTextColor="#555555"
                 keyboardType="decimal-pad"
                 value={price}

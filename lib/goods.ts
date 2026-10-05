@@ -7,6 +7,7 @@ type GoodsRow = {
   text: string | null;
   price: number;
   status: Goods["status"];
+  currency: string;
   images: string[] | null;
   created_at: string;
   archived_at: string | null;
@@ -16,7 +17,7 @@ type GoodsRow = {
 };
 
 const GOODS_SELECT = `
-  goods_id, title, text, price, status, images, created_at, archived_at, archive_method, archive_reason,
+  goods_id, title, text, price, status, currency, images, created_at, archived_at, archive_method, archive_reason,
   goods_tags ( tags ( tag_name ) )
 `;
 
@@ -37,6 +38,7 @@ function mapRow(row: GoodsRow): Goods {
     archive_method: row.archive_method ?? undefined,
     archive_reason: row.archive_reason ?? undefined,
     id: row.goods_id,
+    currency: row.currency ?? "",
   };
 }
 

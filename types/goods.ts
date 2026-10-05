@@ -15,4 +15,5 @@ export type Goods = {
   archive_method?: ArchiveMethod;
   archive_reason?: string;
   id: string;
+  currency: string;
 };

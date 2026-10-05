@@ -41,7 +41,9 @@ export default {
     other: "その他",
   },
   add: {
+    title: "追加",
     addImage: "写真を追加",
+    currency: "通貨",
     curatedStatus: "ステータス",
     statusKeep: "コレクションに保持",
     statusSell: "売却予定",

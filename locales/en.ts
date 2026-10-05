@@ -41,7 +41,9 @@ export default {
     other: "Other",
   },
   add: {
+    title: "Add Item",
     addImage: "Add Visual Memory",
+    currency: "Currency",
     curatedStatus: "Curated Status",
     statusKeep: "Keep in your collection",
     statusSell: "Planning to sell",

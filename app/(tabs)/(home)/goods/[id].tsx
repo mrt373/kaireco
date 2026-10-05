@@ -130,7 +130,9 @@ export default function GoodsDetailScreen() {
               {t("detail.acquisitionValue")}
             </Text>
             <Text className="text-gold text-2xl font-bold">
-              ${item.price.toLocaleString()}
+              {item.currency === "USD"
+                ? `$ ${item.price.toLocaleString()}`
+                : `¥ ${item.price.toLocaleString()}`}
             </Text>
           </View>
 

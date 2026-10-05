@@ -29,9 +29,12 @@ export default function GoodsCard({ item }: Props) {
           {item.title}
         </Text>
         <Text className="text-gold text-sm font-medium">
-          ${item.price.toLocaleString()}
+          {item.currency === "USD"
+            ? `$ ${item.price.toLocaleString()}`
+            : `¥ ${item.price.toLocaleString()}`}
         </Text>
       </View>
     </Pressable>
   );
 }
+//  {currency === "USD" ? "$" : "¥"}
