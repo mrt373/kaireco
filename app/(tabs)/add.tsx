@@ -21,7 +21,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const currencies = ["USD", "JPY"];
+export const currencies = ["USD", "JPY"];
 
 export default function AddScreen() {
   const { t } = useTranslation();

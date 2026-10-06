@@ -1,3 +1,4 @@
+import { currencies } from "@/app/(tabs)/add";
 import ItemImagePicker from "@/components/ItemImagePicker";
 import { fetchGoodsById } from "@/lib/goods";
 import useTags from "@/lib/hooks/useTags";
@@ -5,8 +6,8 @@ import { supabase } from "@/lib/supabase";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
-import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -28,7 +29,7 @@ export default function GoodsEditScreen() {
   const [editImage, setEditImage] = useState<string | null>(null);
   const [upDateImage, setUpDateImage] = useState(false);
   const [newImageUrl, setImageUrl] = useState<string | null>(null);
-
+  const [currency, setCurrency] = useState("");
   const { id } = useLocalSearchParams<{ id: string }>();
   const { tags, selectedTags, setSelectedTags, toggleTag } = useTags();
 
@@ -42,6 +43,7 @@ export default function GoodsEditScreen() {
         setSelectedTags(data?.tags || []);
         setIsKeep(data?.status === "keep");
         setEditImage(data?.images?.[0] || null);
+        setCurrency(data?.currency || "USD");
       }
     });
 
@@ -58,8 +60,8 @@ export default function GoodsEditScreen() {
           title: editTitle,
           price: parseFloat(editValue) || 0,
           text: editText,
-          status: isKeep ? "keep" : "to_sell",
           images: newImageUrl ? [newImageUrl] : editImage ? [editImage] : [],
+          currency,
         })
         .eq("goods_id", id)
         .select("goods_id");
@@ -166,8 +168,33 @@ export default function GoodsEditScreen() {
           <Text className="text-gold text-xs uppercase tracking-widest mb-2">
             {t("add.acquisitionValue")}
           </Text>
+          <View className="flex-row flex-wrap gap-2 mb-5">
+            {currencies.map((curr) => (
+              <Pressable
+                key={curr}
+                onPress={() => setCurrency(curr)}
+                className={`px-4 py-2 rounded-full border ${
+                  currency === curr
+                    ? "bg-gold border-gold"
+                    : "bg-surface border-border"
+                }`}
+              >
+                <Text
+                  className={`text-sm ${
+                    currency === curr
+                      ? "text-black font-bold"
+                      : "text-text-secondary"
+                  }`}
+                >
+                  {curr}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
           <View className="bg-surface border border-border rounded-xl px-4 py-3 mb-5 flex-row items-center">
-            <Text className="text-text-secondary mr-2">$</Text>
+            <Text className="text-text-secondary mr-2">
+              {currency === "USD" ? "$" : "¥"}
+            </Text>
             <TextInput
               className="text-text-primary text-sm flex-1"
               placeholder="0.00"
@@ -177,6 +204,7 @@ export default function GoodsEditScreen() {
               onChangeText={setEditValue}
             />
           </View>
+
           <Text className="text-gold text-xs uppercase tracking-widest mb-2">
             {t("add.category")}
           </Text>
@@ -226,7 +254,9 @@ export default function GoodsEditScreen() {
             onPress={() => router.back()}
             className="flex-1 py-4 rounded-xl border border-border items-center active:opacity-70"
           >
-            <Text className="text-text-primary font-semibold">{t("add.cancel")}</Text>
+            <Text className="text-text-primary font-semibold">
+              {t("add.cancel")}
+            </Text>
           </Pressable>
           <Pressable
             onPress={handleUpdate}
