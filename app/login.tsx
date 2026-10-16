@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import * as Localization from "expo-localization";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -23,6 +24,10 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const locale = Localization.getLocales()[0]?.languageTag;
+  const display_currency = locale === "ja-JP" ? "JPY" : "USD";
+  console.log(display_currency);
+
   const handleSubmit = async () => {
     if (!email || !password || (mode === "signUp" && !name)) {
       Alert.alert(t("auth.missingFields"));
@@ -32,25 +37,45 @@ export default function LoginScreen() {
     setIsSubmitting(true);
     try {
       if (mode === "signIn") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
         if (error) throw error;
       } else {
-        const { data, error } = await supabase.auth.signUp({ email, password });
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
         if (error) throw error;
 
         if (data.user) {
           const { error: profileError } = await supabase
             .from("users")
             .insert({ id: data.user.id, name, email });
+
+          const { error: currencyError } = await supabase
+            .from("users_profile")
+            .insert({
+              user_id: data.user.id,
+              display_currency,
+            });
           if (profileError) throw profileError;
+          if (currencyError) throw currencyError;
         }
 
         if (!data.session) {
-          Alert.alert(t("auth.confirmEmailTitle"), t("auth.confirmEmailMessage"));
+          Alert.alert(
+            t("auth.confirmEmailTitle"),
+            t("auth.confirmEmailMessage"),
+          );
         }
       }
     } catch (error) {
-      Alert.alert(t("auth.errorTitle"), error instanceof Error ? error.message : String(error));
+      Alert.alert(
+        t("auth.errorTitle"),
+        error instanceof Error ? error.message : String(error),
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -67,9 +92,13 @@ export default function LoginScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View className="px-6">
-            <Text className="text-gold text-3xl font-bold text-center mb-1">Karireco</Text>
+            <Text className="text-gold text-3xl font-bold text-center mb-1">
+              Karireco
+            </Text>
             <Text className="text-text-secondary text-sm text-center mb-8">
-              {mode === "signIn" ? t("auth.signInSubtitle") : t("auth.signUpSubtitle")}
+              {mode === "signIn"
+                ? t("auth.signInSubtitle")
+                : t("auth.signUpSubtitle")}
             </Text>
 
             {mode === "signUp" && (
@@ -130,7 +159,9 @@ export default function LoginScreen() {
               className="items-center"
             >
               <Text className="text-text-secondary text-sm">
-                {mode === "signIn" ? t("auth.switchToSignUp") : t("auth.switchToSignIn")}
+                {mode === "signIn"
+                  ? t("auth.switchToSignUp")
+                  : t("auth.switchToSignIn")}
               </Text>
             </Pressable>
           </View>

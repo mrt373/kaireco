@@ -31,6 +31,12 @@ export default function Settings() {
       description: t("profile.profileEditDesc"),
       onPress: () => router.push("/tags_edit"),
     },
+    {
+      icon: "person",
+      label: "通貨選択",
+      description: t("profile.profileEditDesc"),
+      onPress: () => router.push("/setting-currency"),
+    },
   ];
 
   return (
@@ -49,11 +55,6 @@ export default function Settings() {
       </View>
 
       <View className="px-4 pt-6">
-        {/* <View>
-          <Text className="text-text-muted text-xs uppercase tracking-widest mb-3">
-            各種設定
-          </Text>
-        </View> */}
         <View className="bg-surface border border-border rounded-xl overflow-hidden mb-6">
           {MENU_ITEMS.map((item, index) => (
             <Pressable

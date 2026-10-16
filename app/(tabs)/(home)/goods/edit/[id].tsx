@@ -22,7 +22,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GoodsEditScreen() {
   const { t } = useTranslation();
-  const [isKeep, setIsKeep] = useState(true);
   const [editTitle, setEditTitle] = useState("");
   const [editValue, setEditValue] = useState("");
   const [editText, setEditText] = useState("");
@@ -41,7 +40,6 @@ export default function GoodsEditScreen() {
         setEditValue(data?.price?.toString() || "0.00");
         setEditText(data?.text || "");
         setSelectedTags(data?.tags || []);
-        setIsKeep(data?.status === "keep");
         setEditImage(data?.images?.[0] || null);
         setCurrency(data?.currency || "USD");
       }

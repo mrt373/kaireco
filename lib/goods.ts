@@ -16,9 +16,19 @@ type GoodsRow = {
   goods_tags: { tags: { tag_name: string } | null }[];
 };
 
+type userProfileRow = {
+  user_id: string;
+  display_currency: string;
+  birthday: Date;
+};
+
 const GOODS_SELECT = `
   goods_id, title, text, price, status, currency, images, created_at, archived_at, archive_method, archive_reason,
   goods_tags ( tags ( tag_name ) )
+`;
+
+const userProfileSelect = `
+  user_id, display_currency, birthday
 `;
 
 // Row型からGoods型に変換する関数
@@ -75,4 +85,17 @@ export async function fetchArchivedGoods(userId: string): Promise<Goods[]> {
     .order("archived_at", { ascending: false });
   if (error) throw error;
   return (data as unknown as GoodsRow[]).map(mapRow);
+}
+
+//idからユーザー情報を取得する関数
+export async function fetchUserProfile(
+  id: string,
+): Promise<userProfileRow | null> {
+  const { data, error } = await supabase
+    .from("users_profile")
+    .select(userProfileSelect)
+    .eq("user_id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return (data as userProfileRow) ?? null;
 }

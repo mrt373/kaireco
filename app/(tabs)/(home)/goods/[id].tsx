@@ -56,7 +56,6 @@ export default function GoodsDetailScreen() {
     );
   }
   const isArchiveFormOpen = item.archived_at != null;
-  const isToSell = item.status === "to_sell";
 
   const handleMoreOptions = () => {
     setIsOpen(!isOpen);

@@ -20,6 +20,10 @@ function RootNavigator() {
       <Stack.Protected guard={!!session}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="profile-edit" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="setting-currency"
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="notifications" options={{ headerShown: false }} />
         <Stack.Screen name="tags_edit" options={{ headerShown: false }} />
         <Stack.Screen name="settings" options={{ headerShown: false }} />
