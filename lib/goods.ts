@@ -16,10 +16,10 @@ type GoodsRow = {
   goods_tags: { tags: { tag_name: string } | null }[];
 };
 
-type userProfileRow = {
+export type userProfileRow = {
   user_id: string;
-  display_currency: string;
-  birthday: Date;
+  display_currency: string | null;
+  birthday: Date | null;
 };
 
 const GOODS_SELECT = `

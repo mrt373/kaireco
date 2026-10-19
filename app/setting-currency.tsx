@@ -1,21 +1,58 @@
+import { useAuth } from "@/lib/auth";
+import { fetchUserProfile, userProfileRow } from "@/lib/goods";
 import { Feather, MaterialIcons } from "@expo/vector-icons";
-import * as Localization from "expo-localization";
-import { useRouter } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileEditScreen() {
   const { t } = useTranslation();
-  const router = useRouter();
+  // const router = useRouter();
+  const [curr, setCurr] = useState<userProfileRow | null>(null);
+  const [selectedCurrency, setSelectedCurrency] = useState("");
 
-  const locale = Localization.getLocales()[0]?.languageTag; // "ja-JP" など
-  console.log(locale);
+  const [isLoading, setIsLoading] = useState(true);
+  const { session } = useAuth();
+  // const locale = Localization.getLocales()[0]?.languageTag; // "ja-JP" など
+  // console.log(locale + "現在の通貨");
+
+  const currencies = [
+    { value: "USD", label: "米国ドル（USD）" },
+    { value: "JPY", label: "日本円（JPY）" },
+  ];
 
   const handleSave = () => {
     Alert.alert(t("common.save"), t("profileEdit.savedMessage"));
-    router.back();
+    // router.back();
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!session?.user) return;
+      let isActive = true;
+      setIsLoading(true);
+      fetchUserProfile(session.user.id)
+        .then((data) => {
+          if (isActive) setCurr(data);
+          setSelectedCurrency(data?.display_currency ?? "USD");
+        })
+        .finally(() => {
+          if (isActive) setIsLoading(false);
+        });
+      return () => {
+        isActive = false;
+      };
+    }, [session?.user]),
+  );
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
@@ -42,19 +79,22 @@ export default function ProfileEditScreen() {
         <Text className="text-text-muted text-xs uppercase tracking-widest mb-2">
           合計金額の通貨を選択できます
         </Text>
-        <View
-          // onChangeText={setName}
-          className="bg-surface border border-border rounded-t-xl px-4 py-3 text-text-primary flex-row  justify-between"
-        >
-          <Text className="text-text-primary">日本円（JPY）</Text>
-          <Feather name="check" size={24} color="#C9A84C" />
-        </View>
-        <View
-          // onChangeText={setName}
-          className="bg-surface border border-border rounded-b-xl px-4 py-3 text-text-primary mb-5 flex-row  justify-between"
-        >
-          <Text className="text-text-primary">米国ドル（USD）</Text>
-          <Feather name="check" size={24} color="#C9A84C" />
+
+        <View className=" mb-6">
+          {currencies.map((curr) => (
+            <Pressable
+              key={curr.value}
+              onPress={() => setSelectedCurrency(curr.value)}
+              className={`flex rounded-xl bg-surface border border-border px-4 py-6 text-text-primary flex-row  justify-between `}
+            >
+              <Text className="text-sm text-text-primary h-6 ">
+                {curr.label}
+              </Text>
+              {selectedCurrency === curr.value ? (
+                <Feather name="check" size={20} color="#C9A84C" />
+              ) : null}
+            </Pressable>
+          ))}
         </View>
 
         <TouchableOpacity
