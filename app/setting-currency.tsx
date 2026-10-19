@@ -73,13 +73,6 @@ export default function ProfileEditScreen() {
         className="flex-1 px-4 pt-6"
         contentContainerStyle={{ paddingBottom: 40 }}
       >
-        <Text className="text-text-muted text-xs uppercase tracking-widest mb-2">
-          Currency
-        </Text>
-        <Text className="text-text-muted text-xs uppercase tracking-widest mb-2">
-          合計金額の通貨を選択できます
-        </Text>
-
         <View className=" mb-6">
           {currencies.map((curr) => (
             <Pressable
