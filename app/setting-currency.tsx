@@ -1,5 +1,6 @@
 import { useAuth } from "@/lib/auth";
-import { fetchUserProfile, userProfileRow } from "@/lib/goods";
+import { fetchUserProfile } from "@/lib/goods";
+import { supabase } from "@/lib/supabase";
 import { Feather, MaterialIcons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
@@ -17,10 +18,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function ProfileEditScreen() {
   const { t } = useTranslation();
   // const router = useRouter();
-  const [curr, setCurr] = useState<userProfileRow | null>(null);
   const [selectedCurrency, setSelectedCurrency] = useState("");
 
-  const [isLoading, setIsLoading] = useState(true);
   const { session } = useAuth();
   // const locale = Localization.getLocales()[0]?.languageTag; // "ja-JP" など
   // console.log(locale + "現在の通貨");
@@ -30,24 +29,32 @@ export default function ProfileEditScreen() {
     { value: "JPY", label: "日本円（JPY）" },
   ];
 
-  const handleSave = () => {
-    Alert.alert(t("common.save"), t("profileEdit.savedMessage"));
-    // router.back();
+  const handleUpdate = async () => {
+    try {
+      const { error: UpDateError } = await supabase
+        .from("users_profile")
+        .update({
+          display_currency: selectedCurrency,
+        })
+        .eq("user_id", session?.user?.id);
+
+      if (UpDateError) throw UpDateError;
+      Alert.alert(t("edit.updated"));
+      router.back();
+    } catch (error) {
+      console.log("NG", error);
+    }
   };
 
   useFocusEffect(
     useCallback(() => {
       if (!session?.user) return;
       let isActive = true;
-      setIsLoading(true);
-      fetchUserProfile(session.user.id)
-        .then((data) => {
-          if (isActive) setCurr(data);
-          setSelectedCurrency(data?.display_currency ?? "USD");
-        })
-        .finally(() => {
-          if (isActive) setIsLoading(false);
-        });
+      fetchUserProfile(session.user.id).then((data) => {
+        if (isActive)
+          data && setSelectedCurrency(data.display_currency ?? "USD");
+      });
+
       return () => {
         isActive = false;
       };
@@ -91,7 +98,7 @@ export default function ProfileEditScreen() {
         </View>
 
         <TouchableOpacity
-          onPress={handleSave}
+          onPress={handleUpdate}
           className="bg-gold rounded-xl py-4 items-center mb-3 active:opacity-80 "
         >
           <Text className="text-background font-bold">{t("common.save")}</Text>

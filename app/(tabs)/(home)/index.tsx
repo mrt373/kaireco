@@ -1,6 +1,7 @@
 import GoodsCard from "@/components/GoodsCard";
 import { useAuth } from "@/lib/auth";
-import { fetchActiveGoods } from "@/lib/goods";
+import { getCurrentCurrency } from "@/lib/exchange";
+import { fetchActiveGoods, fetchUserProfile } from "@/lib/goods";
 import { Goods } from "@/types/goods";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
@@ -22,16 +23,37 @@ export default function HomeScreen() {
   const [search, setSearch] = useState("");
   const [selectedTag, setSelectedTag] = useState("all");
   const [goods, setGoods] = useState<Goods[]>([]);
+  const [selectedCurrency, setSelectedCurrency] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-
+  const [currencyRates, setCurrencyRates] = useState<Record<string, number>>(
+    {},
+  );
+  const locale = selectedCurrency === "JPY" ? "ja-JP" : "en-US";
   useFocusEffect(
     useCallback(() => {
       if (!session?.user) return;
       let isActive = true;
       setIsLoading(true);
-      fetchActiveGoods(session.user.id)
-        .then((data) => {
-          if (isActive) setGoods(data);
+      Promise.all([
+        fetchActiveGoods(session.user.id),
+        fetchUserProfile(session.user.id),
+      ])
+        .then(([goodsData, profileData]) => {
+          if (isActive) setGoods(goodsData);
+          if (isActive)
+            setSelectedCurrency(profileData?.display_currency ?? "USD");
+          const currencies = Array.from(
+            new Set([
+              ...goodsData.map((g) => g.currency),
+              profileData?.display_currency ?? "USD",
+            ]),
+          ).filter((c) => c !== "USD");
+          console.log(currencies, +"出力確認");
+          if (currencies.length > 0) {
+            getCurrentCurrency("USD", currencies).then((rates) => {
+              if (isActive) setCurrencyRates(rates);
+            });
+          }
         })
         .finally(() => {
           if (isActive) setIsLoading(false);
@@ -46,7 +68,6 @@ export default function HomeScreen() {
     t("home.tagAll"),
     ...Array.from(new Set(goods.flatMap((g) => g.tags))),
   ];
-  const totalValue = goods.reduce((sum, g) => sum + g.price, 0);
 
   const filtered = useMemo<Goods[]>(() => {
     return goods.filter((g) => {
@@ -55,6 +76,34 @@ export default function HomeScreen() {
       return matchTag && matchSearch;
     });
   }, [goods, search, selectedTag]);
+
+  // 通貨ごとの合計金額を計算
+  const totalByCountry = goods.reduce(
+    (totalAmount, goods) => {
+      totalAmount[goods.currency] =
+        (totalAmount[goods.currency] ?? 0) + goods.price;
+      return totalAmount;
+    },
+    {} as Record<string, number>,
+  );
+
+  const convertedTotal = Object.entries(totalByCountry).reduce(
+    (sum, [currency, amount]) => {
+      const rate = currencyRates[currency] ?? 1;
+      //JPY157.96
+      if (selectedCurrency === "JPY") {
+        const usdAmount = amount / rate;
+        return sum + usdAmount * (currencyRates[selectedCurrency] ?? 1);
+      } else if (selectedCurrency === "USD") {
+        return sum + amount / rate;
+      }
+      return sum + amount;
+    },
+    0,
+  );
+  // reduceの外で処理する
+  const displayTotal =
+    selectedCurrency === "JPY" ? Math.round(convertedTotal) : convertedTotal;
 
   if (isLoading) {
     return (
@@ -116,8 +165,31 @@ export default function HomeScreen() {
           {t("home.totalPortfolioValue")}
         </Text>
         <Text className="text-text-primary text-3xl font-bold mb-2">
-          ${totalValue.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+          {selectedCurrency === "JPY" ? "¥" : "$"}
+          {displayTotal.toLocaleString(locale, {
+            minimumFractionDigits: { JPY: 0, USD: 2 }[selectedCurrency],
+            maximumFractionDigits: { JPY: 0, USD: 2 }[selectedCurrency],
+          })}
         </Text>
+
+        <View className="flex-row gap-4">
+          <View className="flex-row">
+            <Text className="text-text-primary text-md mb-2">内訳：</Text>
+          </View>
+          <Text className="text-text-primary text-md mb-2">
+            {"¥" +
+              (totalByCountry.JPY ?? 0).toLocaleString("ja-JP", {
+                minimumFractionDigits: 0,
+              })}
+          </Text>
+          <Text className="text-text-primary text-md mb-2">/</Text>
+          <Text className="text-text-primary text-md mb-2">
+            {"$" +
+              (totalByCountry.USD ?? 0).toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+              })}
+          </Text>
+        </View>
       </View>
 
       <FlatList

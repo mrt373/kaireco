@@ -26,7 +26,7 @@ export default function LoginScreen() {
 
   const locale = Localization.getLocales()[0]?.languageTag;
   const display_currency = locale === "ja-JP" ? "JPY" : "USD";
-  console.log(display_currency);
+  // console.log(display_currency);
 
   const handleSubmit = async () => {
     if (!email || !password || (mode === "signUp" && !name)) {
