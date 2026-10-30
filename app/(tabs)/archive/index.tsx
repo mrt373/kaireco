@@ -2,7 +2,7 @@ import ArchiveCard from "@/components/ArchiveCard";
 import { useAuth } from "@/lib/auth";
 import { fetchArchivedGoods } from "@/lib/goods";
 import { ArchiveMethod, Goods } from "@/types/goods";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, Pressable, ScrollView, Text, View } from "react-native";

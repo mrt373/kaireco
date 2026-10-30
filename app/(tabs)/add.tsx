@@ -50,6 +50,11 @@ export default function AddScreen() {
     // console.log(upLoadImage);
   };
 
+  const OnclickCancel = () => {
+    router.back();
+    resetForm();
+  };
+
   const handleCommit = async () => {
     if (!session?.user) return;
     if (!title.trim()) {
@@ -133,7 +138,9 @@ export default function AddScreen() {
               {imageUrl ? (
                 <Image
                   source={{ uri: imageUrl }}
-                  style={{ width: 200, height: 200 }}
+                  style={{ width: "100%", height: 176 }}
+                  className="w-full h-44 rounded-xl "
+                  resizeMode="cover"
                 />
               ) : (
                 <>
@@ -246,8 +253,8 @@ export default function AddScreen() {
           </View>
           <View className="  flex-row gap-3 px-4 py-4 bg-background  border-border">
             <Pressable
-              onPress={() => router.back()}
-              className="flex-1 py-4 rounded-xl border border-border items-center active:opacity-70"
+              onPress={OnclickCancel}
+              className="flex-1 py-4 rounded-xl border border-border items-center active:opacity-70 overflow-hidden"
             >
               <Text className="text-text-primary font-semibold">
                 {t("add.cancel")}
